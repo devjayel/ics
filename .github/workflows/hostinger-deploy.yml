@@ -262,8 +262,14 @@ jobs:
             
             echo "🔧 Running Laravel setup commands..."
             
+            # Generate application key
+            php artisan key:generate
+
             # Run migrations
             php artisan migrate --force
+
+            # Run database seeders (if needed)
+            php artisan db:seed --force
             
             # Clear and cache configuration
             php artisan config:clear
