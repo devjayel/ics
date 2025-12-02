@@ -23,7 +23,7 @@ import { ArrowLeft } from 'lucide-react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'User Management',
+        title: 'Management',
         href: index().url,
     },
     {

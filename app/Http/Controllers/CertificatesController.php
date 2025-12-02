@@ -33,7 +33,7 @@ class CertificatesController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'rul_id' => 'required|exists:ruls,id',
+            'rul_id' => 'required|exists:resident_unit_leaders,id',
             'certificate_name' => 'required|string|max:255',
             'certificate_file' => 'required|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:10240',
         ]);
@@ -77,7 +77,7 @@ class CertificatesController extends Controller
     public function update(Request $request, Certificate $certificate)
     {
         $validated = $request->validate([
-            'rul_id' => 'required|exists:ruls,id',
+            'rul_id' => 'required|exists:resident_unit_leaders,id',
             'certificate_name' => 'required|string|max:255',
             'certificate_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:10240',
         ]);

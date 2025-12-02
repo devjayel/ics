@@ -20,10 +20,11 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
+import { useEffect } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'User Management',
+        title: 'Management',
         href: index().url,
     },
     {
@@ -49,6 +50,10 @@ export default function Edit({ user }: EditProps) {
         password: '',
         password_confirmation: '',
     });
+
+    useEffect(() => {
+        console.log(user);
+    },[]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

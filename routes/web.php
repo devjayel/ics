@@ -39,15 +39,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('personnels', 'App\Http\Controllers\PersonnelController');
     Route::resource('certificates', 'App\Http\Controllers\CertificatesController');
     
-    // User Management Routes
-    Route::resource('management', 'App\Http\Controllers\UserController')->names([
-        'index' => 'management.index',
-        'create' => 'management.create',
-        'store' => 'management.store',
-        'edit' => 'management.edit',
-        'update' => 'management.update',
-        'destroy' => 'management.destroy',
-    ]);
+    // Management Routes
+    Route::resource('management', 'App\Http\Controllers\UserController');
 });
 
 require __DIR__.'/settings.php';

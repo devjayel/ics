@@ -48,7 +48,7 @@ class PersonnelController extends Controller
 
     public function edit(Personnel $personnel)
     {
-        return Inertia::render('personnels/form', [
+        return Inertia::render('personnels/edit', [
             'personnel' => $personnel
         ]);
     }

@@ -35,7 +35,7 @@ import { useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
-        title: 'User Management',
+        title: 'Management',
         href: index().url,
     },
 ];
@@ -92,15 +92,15 @@ export default function Index({ users, filters }: IndexProps) {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="User Management" />
+            <Head title="Management" />
             <div className="flex h-full flex-1 flex-col gap-4 p-4">
                 <Card>
                     <CardHeader>
                         <div className="flex items-center justify-between">
                             <div>
-                                <CardTitle>User Management</CardTitle>
+                                <CardTitle>Management</CardTitle>
                                 <CardDescription>
-                                    Manage system users and their roles
+                                    Manage system users and their information
                                 </CardDescription>
                             </div>
                             <Link href={create().url}>
