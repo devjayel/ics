@@ -57,7 +57,7 @@ export default function Edit({ user }: EditProps) {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(update({ management: user.uuid }).url);
+        put(update({ user: user.uuid }).url);
     };
 
     return (

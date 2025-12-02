@@ -79,7 +79,7 @@ export default function Index({ users, filters }: IndexProps) {
 
     const confirmDelete = () => {
         if (userToDelete) {
-            router.delete(destroy({ management: userToDelete }).url);
+            router.delete(destroy({ user: userToDelete }).url);
             setDeleteDialogOpen(false);
             setUserToDelete(null);
         }

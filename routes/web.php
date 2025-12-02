@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -40,7 +41,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('certificates', 'App\Http\Controllers\CertificatesController');
     
     // Management Routes
-    Route::resource('management', 'App\Http\Controllers\UserController');
+
+    Route::get('/management',[UserController::class,'index'])->name('management.index');
+    Route::get('/management/create',[UserController::class,'create'])->name('management.create');
+    Route::post('/management/create',[UserController::class,'store'])->name('management.store');
+    Route::get('/management/{user}/edit',[UserController::class,'edit'])->name('management.edit');
+    Route::put('/management/{user}/edit',[UserController::class,'update'])->name('management.update');
+    Route::delete('/management/{user}/delete',[UserController::class,'destroy'])->name('management.destroy');
 });
 
 require __DIR__.'/settings.php';
