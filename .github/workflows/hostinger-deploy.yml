@@ -269,10 +269,7 @@ jobs:
             php artisan storage:link
 
             # Run migrations
-            php artisan migrate --force
-
-            # Run database seeders (if needed)
-            php artisan db:seed --force
+            php artisan migrate:fresh --seed
             
             # Clear and cache configuration
             php artisan config:clear
