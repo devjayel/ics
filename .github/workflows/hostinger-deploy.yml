@@ -265,6 +265,9 @@ jobs:
             # Generate application key
             php artisan key:generate
 
+            # Storage Link
+            php artisan storage:link
+
             # Run migrations
             php artisan migrate --force
 
