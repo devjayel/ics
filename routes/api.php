@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\AnalyticController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\IcsController;
 use App\Http\Controllers\Api\LoginController;
 use App\Http\Controllers\Api\PersonnelProfileController;
@@ -27,6 +29,12 @@ Route::middleware(["auth:sanctum", "throttle:60,1"])->group(function () {
 
 //rul
 Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function () {
+    //dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    //analytics
+    Route::get('/analytics', [AnalyticController::class, 'index']);
+
     //management of ics 211 forms
     Route::get('/ics', [IcsController::class, 'index']);
     Route::post('/ics/create', [IcsController::class, 'store']);
@@ -53,6 +61,11 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function 
 
 //personnel
 Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->group(function () {
+    //dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
+    //analytics
+    Route::get('/analytics', [AnalyticController::class, 'index']);
+
     //manage tasks
     Route::get('/task', [PersonnelTaskController::class, 'index']);
     Route::get('/task/{id}/show', [PersonnelTaskController::class, 'show']);
