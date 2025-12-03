@@ -8,6 +8,7 @@ class CheckInDetails extends Model
 {
     protected $fillable = [
         'uuid',
+        'personnel_id',
         'ics211_record_id',
         'order_request_number',
         'checkin_date',
@@ -37,6 +38,10 @@ class CheckInDetails extends Model
         'with_manifest' => 'boolean',
         'sent_resl' => 'boolean',
     ];
+
+    public function personnel(){
+        return $this->belongsTo(Personnel::class);
+    }
 
     public function ics211Record()
     {
