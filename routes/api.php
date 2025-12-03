@@ -48,7 +48,6 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function(
     Route::get('/task/{id}/show', [TaskController::class, 'show']);
     Route::post('/task/{id}/edit', [TaskController::class, 'update']);
     Route::post('/task/{id}/delete', [TaskController::class, 'destroy']);
-    Route::post('/task/{id}/complete', [TaskController::class, 'complete']);
     //managing own profile
     Route::get('/profile/{id}', [RulProfileController::class, 'show']);
     Route::post('/profile/{id}/edit', [RulProfileController::class, 'update']);
@@ -57,7 +56,9 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function(
 //personnel
 Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->group(function(){
     //manage tasks
-    Route::resource('task', PersonnelTaskController::class);
+    Route::get('/task', [PersonnelTaskController::class, 'index']);
+    Route::get('/task/{id}/show', [PersonnelTaskController::class, 'show']);
     //manage own profile
-    Route::resource('profile', PersonnelProfileController::class);
+    Route::get('/profile/{id}', [PersonnelProfileController::class, 'show']);
+    Route::post('/profile/{id}/edit', [PersonnelProfileController::class, 'update']);
 });
