@@ -17,7 +17,7 @@ class PersonnelController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Personnel::all(),
+            'data' => Personnel::with("rul")->get(),
         ]);
     }
 
@@ -56,7 +56,7 @@ class PersonnelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $personnel,
+            'data' => $personnel->with("rul")->first(),
         ], 201);
     }
 
@@ -115,7 +115,7 @@ class PersonnelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $personnel,
+            'data' => $personnel->with("rul")->first(),
             'message' => 'Personnel updated successfully',
         ]);
     }
