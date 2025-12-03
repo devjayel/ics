@@ -22,6 +22,14 @@ jobs:
           extensions: mbstring, xml, bcmath, pdo_mysql, pdo_sqlite, gd, zip
           coverage: none
 
+      - name: Setup MySQL
+        uses: shogo82148/actions-setup-mysql@v1
+        with:
+          mysql-version: '8.0'
+
+      - name: Create Test Database
+        run: mysql -uroot -h127.0.0.1 -e 'CREATE DATABASE IF NOT EXISTS testing;'
+
       - name: Copy .env
         run: |
           if [ -f .env.example ]; then
@@ -31,6 +39,14 @@ jobs:
             echo "APP_ENV=testing" > .env
             echo "APP_KEY=" >> .env
           fi
+          
+          # Configure MySQL for testing
+          sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=testing/' .env
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=root/' .env
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=/' .env
 
       - name: Install Composer Dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
