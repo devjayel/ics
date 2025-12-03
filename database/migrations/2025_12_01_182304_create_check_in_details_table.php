@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->foreignId('ics211_record_id')->constrained('ics211_records')->onDelete('cascade');
+            //nullable personnel id
+            $table->foreignId('personnel_id')->nullable()->constrained('personnels')->onDelete('cascade');
             $table->string('order_request_number');
             $table->date('checkin_date');
             $table->time('checkin_time');
@@ -33,6 +35,7 @@ return new class extends Migration {
             $table->string('incident_assignment')->nullable();
             $table->string('other_qualifications')->nullable();
             $table->boolean('sent_resl')->default(false);
+            $table->string('status')->default('pending'); // completed, pending, ongoing
             $table->timestamps();
         });
     }

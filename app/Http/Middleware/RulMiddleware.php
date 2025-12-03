@@ -20,13 +20,23 @@ class RulMiddleware
     {
         $token = $this->extractToken($request);
         if (!$token) {
-            return response()->json(['message' => 'Unauthorized: token missing'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'You must login first as RUL.'
+            ], 401);
         }
 
-        $exists = Rul::where('token', $token)->exists();
-        if (!$exists) {
-            return response()->json(['message' => 'Unauthorized: token invalid'], 401);
+        $rul = Rul::where('token', $token)->first();
+        if (!$rul) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to access this resource.'
+            ], 401);
         }
+
+        $request->setUserResolver(function () use ($rul) {
+            return $rul;
+        });
 
         return $next($request);
     }

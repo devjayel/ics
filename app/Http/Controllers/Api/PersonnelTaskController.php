@@ -12,15 +12,14 @@ class PersonnelTaskController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $personnel = auth()->user();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        $tasks = $personnel->tasks()->latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $tasks,
+        ]);
     }
 
     /**
@@ -31,18 +30,7 @@ class PersonnelTaskController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function updateStatus($uuid, $status)
     {
         //
     }

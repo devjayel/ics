@@ -20,6 +20,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->string('checkin_location');
             $table->text('remarks')->nullable();
+            $table->string('status')->default('pending'); // completed, pending, ongoing
             $table->timestamps();
         });
     }

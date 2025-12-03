@@ -11,15 +11,10 @@ class RulProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $uuid)
+    public function show(Request $request)
     {
-        $profile = Rul::where('uuid', $uuid)->first();
-        if (!$profile) {
-            return response()->json([
-                'success' => false,
-                'message' => 'RUL profile not found',
-            ], 404);
-        }
+        $profile = $request->user();
+
         return response()->json([
             'success' => true,
             'data' => $profile,
@@ -28,15 +23,9 @@ class RulProfileController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-        $profile = Rul::where('uuid', $id)->first();
-        if (!$profile) {
-            return response()->json([
-                'success' => false,
-                'message' => 'RUL profile not found',
-            ], 404);
-        }
+        $profile = $request->user();
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
@@ -68,14 +57,14 @@ class RulProfileController extends Controller
             if ($profile->signature) {
                 \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->signature);
             }
-            
+
             $signatureData = $request->input('signature');
             $signatureData = preg_replace('/^data:image\/\w+;base64,/', '', $signatureData);
             $signatureData = base64_decode($signatureData);
-            
+
             $signaturePath = 'signatures/' . $profile->uuid . '.png';
             \Illuminate\Support\Facades\Storage::disk('public')->put($signaturePath, $signatureData);
-            
+
             $profile->update(['signature' => $signaturePath]);
         }
 
@@ -95,7 +84,7 @@ class RulProfileController extends Controller
             foreach ($request->file('certificates') as $certificate) {
                 $fileName = time() . '_' . \Illuminate\Support\Str::uuid() . '.' . $certificate->getClientOriginalExtension();
                 $filePath = $certificate->storeAs('certificates', $fileName, 'public');
-                
+
                 \App\Models\Certificate::create([
                     'uuid' => \Illuminate\Support\Str::uuid(),
                     'rul_id' => $profile->id,

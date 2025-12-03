@@ -15,6 +15,7 @@ class Ics211Record extends Model
         'start_time',
         'checkin_location',
         'remarks',
+        'status',
     ];
 
     public function rul()

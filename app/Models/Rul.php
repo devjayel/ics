@@ -9,6 +9,10 @@ class Rul extends Model
 {
     protected $table = 'resident_unit_leaders';
 
+    protected $hidden = [
+        'id'
+    ];
+
     protected $fillable = [
         'uuid',
         'name',

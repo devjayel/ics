@@ -28,8 +28,9 @@ class IcsController extends Controller
      */
     public function store(Request $request)
     {
+        $rul_id = $request->user()->id;
+
         $validated = $request->validate([
-            'rul_id' => 'required|exists:resident_unit_leaders,id',
             'name' => 'required|string|max:255',
             'order_number' => 'required|string|max:255',
             'start_date' => 'required|date',
@@ -39,6 +40,7 @@ class IcsController extends Controller
             
             // Check-in details array validation
             'check_in_details' => 'nullable|array',
+            'check_in_details.*.personnel_id' => 'nullable|exists:personnels,id',
             'check_in_details.*.order_request_number' => 'required|string|max:255',
             'check_in_details.*.checkin_date' => 'required|date',
             'check_in_details.*.checkin_time' => 'required|date_format:H:i',
@@ -63,7 +65,7 @@ class IcsController extends Controller
         // Create ICS 211 Record
         $ics211Record = Ics211Record::create([
             'uuid' => Str::uuid(),
-            'rul_id' => $validated['rul_id'],
+            'rul_id' => $rul_id,
             'name' => $validated['name'],
             'order_number' => $validated['order_number'],
             'start_date' => $validated['start_date'],
@@ -78,6 +80,7 @@ class IcsController extends Controller
                 CheckInDetails::create([
                     'uuid' => Str::uuid(),
                     'ics211_record_id' => $ics211Record->id,
+                    'personnel_id' => $checkInDetail['personnel_id'] ?? null,
                     'order_request_number' => $checkInDetail['order_request_number'],
                     'checkin_date' => $checkInDetail['checkin_date'],
                     'checkin_time' => $checkInDetail['checkin_time'],
@@ -154,6 +157,7 @@ class IcsController extends Controller
             
             // Check-in details array validation
             'check_in_details' => 'nullable|array',
+            'check_in_details.*.personnel_id' => 'nullable|exists:personnels,id',
             'check_in_details.*.uuid' => 'nullable|exists:check_in_details,uuid',
             'check_in_details.*.order_request_number' => 'required|string|max:255',
             'check_in_details.*.checkin_date' => 'required|date',
@@ -205,6 +209,7 @@ class IcsController extends Controller
                     // Update existing
                     CheckInDetails::where('uuid', $checkInDetail['uuid'])->update([
                         'order_request_number' => $checkInDetail['order_request_number'],
+                        'personnel_id' => $checkInDetail['personnel_id'] ?? null,
                         'checkin_date' => $checkInDetail['checkin_date'],
                         'checkin_time' => $checkInDetail['checkin_time'],
                         'kind' => $checkInDetail['kind'],
@@ -229,6 +234,7 @@ class IcsController extends Controller
                     CheckInDetails::create([
                         'uuid' => Str::uuid(),
                         'ics211_record_id' => $ics211Record->id,
+                        'personnel_id' => $checkInDetail['personnel_id'] ?? null,
                         'order_request_number' => $checkInDetail['order_request_number'],
                         'checkin_date' => $checkInDetail['checkin_date'],
                         'checkin_time' => $checkInDetail['checkin_time'],
@@ -259,6 +265,33 @@ class IcsController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'ICS 211 record updated successfully',
+            'data' => $ics211Record,
+        ]);
+    }
+
+    public function updateStatus($ics211Record, $status){
+        $ics211Record = Ics211Record::where('uuid', $ics211Record)->first();
+        if (!$ics211Record) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ICS 211 record not found',
+            ], 404);
+        }
+
+        $validStatuses = ['active', 'inactive', 'closed'];
+        if (!in_array($status, $validStatuses)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid status provided',
+            ], 400);
+        }
+
+        $ics211Record->status = $status;
+        $ics211Record->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'ICS 211 record status updated successfully',
             'data' => $ics211Record,
         ]);
     }

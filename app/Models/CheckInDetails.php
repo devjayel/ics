@@ -28,6 +28,7 @@ class CheckInDetails extends Model
         'incident_assignment',
         'other_qualifications',
         'sent_resl',
+        'status',
     ];
 
     protected $casts = [
@@ -40,6 +41,11 @@ class CheckInDetails extends Model
     public function ics211Record()
     {
         return $this->belongsTo(Ics211Record::class);
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(CheckInDetailHistories::class);
     }
 
     public function getRouteKeyName()

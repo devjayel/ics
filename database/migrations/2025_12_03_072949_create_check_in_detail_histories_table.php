@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tasks', function (Blueprint $table) {
+        Schema::create('check_in_detail_histories', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
-            $table->string('title');
+            $table->foreignId('ics211_record_id')->constrained('ics211_records')->onDelete('cascade');
+            $table->string('order_request_number');
+            $table->text('remarks')->nullable();
             $table->text('description')->nullable();
-            $table->string('status')->default('pending');
+            $table->string('status')->default('pending'); // pending, accepted, rejected, ongoing, completed
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('check_in_detail_histories');
     }
 };

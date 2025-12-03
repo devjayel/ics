@@ -23,6 +23,10 @@ class Personnel extends Model
         'status',
     ];
 
+    public function tasks(){
+        return $this->hasMany(CheckInDetails::class);
+    }
+
 
     public function getRouteKeyName()
     {

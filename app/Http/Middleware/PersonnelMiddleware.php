@@ -13,13 +13,23 @@ class PersonnelMiddleware
     {
         $token = $this->extractToken($request);
         if (!$token) {
-            return response()->json(['message' => 'Unauthorized: token missing'], 401);
+            return response()->json([
+                'success' => false,
+                'message' => 'You must login first as Personnel.'
+            ], 401);
         }
 
-        $exists = Personnel::where('token', $token)->exists();
-        if (!$exists) {
-            return response()->json(['message' => 'Unauthorized: token invalid'], 401);
+        $personnel = Personnel::where('token', $token)->first();
+        if (!$personnel) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to access this resource.'
+            ], 401);
         }
+
+        $request->setUserResolver(function () use ($personnel) {
+            return $personnel;
+        });
 
         return $next($request);
     }

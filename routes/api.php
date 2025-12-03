@@ -6,9 +6,7 @@ use App\Http\Controllers\Api\PersonnelProfileController;
 use App\Http\Controllers\Api\PersonnelTaskController;
 use App\Http\Controllers\Api\RulProfileController;
 use App\Http\Controllers\Api\PersonnelController;
-use App\Http\Controllers\Api\TaskController;
-use App\Http\Middleware\PersonnelMiddleware;
-use App\Http\Middleware\RulMiddleware;
+use App\Http\Controllers\Api\CheckInDetailHistoriesController;
 
 
 Route::get('/status', function () {
@@ -16,24 +14,29 @@ Route::get('/status', function () {
 });
 
 //Login
-Route::middleware("throttle:60,1")->prefix("auth")->group(function(){
+Route::middleware("throttle:60,1")->prefix("auth")->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
     Route::post('/login/app', [LoginController::class, 'loginThroughApp']);
     Route::post('/logout/app', [LoginController::class, 'logoutThroughApp']);
 });
 
-Route::middleware(["auth:sanctum","throttle:60,1"])->group(function(){
+Route::middleware(["auth:sanctum", "throttle:60,1"])->group(function () {
     Route::post('auth/logout', [LoginController::class, 'logout']);
 });
 
 //rul
-Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function(){
+Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function () {
     //management of ics 211 forms
     Route::get('/ics', [IcsController::class, 'index']);
     Route::post('/ics/create', [IcsController::class, 'store']);
     Route::get('/ics/{id}/show', [IcsController::class, 'show']);
     Route::post('/ics/{id}/edit', [IcsController::class, 'update']);
     Route::post('/ics/{id}/delete', [IcsController::class, 'destroy']);
+    Route::post('/ics/{id}/status/{status}', [IcsController::class, 'updateStatus']);
+
+    //management of CheckInDetailHistories
+    Route::get('/ics/checkin/{id}/history', [CheckInDetailHistoriesController::class, 'show']);
+    Route::post('/ics/checkin/history/{id}/status/{status}', [CheckInDetailHistoriesController::class, 'updateStatus']);
 
     //management personnel accounts
     Route::get('/personnel', [PersonnelController::class, 'index']);
@@ -42,23 +45,23 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function(
     Route::post('/personnel/{id}/edit', [PersonnelController::class, 'update']);
     Route::post('/personnel/{id}/delete', [PersonnelController::class, 'destroy']);
 
-    //management of personnel task
-    Route::get('/task', [TaskController::class, 'index']);
-    Route::post('/task/create', [TaskController::class, 'store']);
-    Route::get('/task/{id}/show', [TaskController::class, 'show']);
-    Route::post('/task/{id}/edit', [TaskController::class, 'update']);
-    Route::post('/task/{id}/delete', [TaskController::class, 'destroy']);
     //managing own profile
-    Route::get('/profile/{id}', [RulProfileController::class, 'show']);
-    Route::post('/profile/{id}/edit', [RulProfileController::class, 'update']);
+    Route::get('/profile', [RulProfileController::class, 'show']);
+    Route::post('/profile/update', [RulProfileController::class, 'update']);
 });
 
 //personnel
-Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->group(function(){
+Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->group(function () {
     //manage tasks
     Route::get('/task', [PersonnelTaskController::class, 'index']);
     Route::get('/task/{id}/show', [PersonnelTaskController::class, 'show']);
+    Route::post('/task/{id}/status/{status}', [PersonnelTaskController::class, 'updateStatus']);
+
+    //CheckInDetailsHistories
+    Route::get('/ics/checkin/{id}/history', [CheckInDetailHistoriesController::class, 'show']);
+    Route::post('/ics/checkin/history/{id}/status/{status}', [CheckInDetailHistoriesController::class, 'updateStatus']);
+
     //manage own profile
-    Route::get('/profile/{id}', [PersonnelProfileController::class, 'show']);
-    Route::post('/profile/{id}/edit', [PersonnelProfileController::class, 'update']);
+    Route::get('/profile', [PersonnelProfileController::class, 'show']);
+    Route::post('/profile/update', [PersonnelProfileController::class, 'update']);
 });
