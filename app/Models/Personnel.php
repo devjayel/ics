@@ -15,6 +15,7 @@ class Personnel extends Model
     protected $fillable = [
         'uuid',
         'name',
+        'rul_id',
         'contact_number',
         'serial_number',
         'department',
@@ -25,6 +26,11 @@ class Personnel extends Model
 
     public function tasks(){
         return $this->hasMany(CheckInDetails::class);
+    }
+
+    public function rul()
+    {
+        return $this->belongsTo(Rul::class);
     }
 
 

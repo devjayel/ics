@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('personnels', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
+            $table->foreignId('rul_id')->constrained('resident_unit_leaders')->onDelete('cascade');
             $table->string('name');
             $table->string('contact_number');
             $table->string('serial_number')->unique();

@@ -43,8 +43,11 @@ class PersonnelController extends Controller
             'department.max' => 'Department must not exceed 100 characters.',
         ]);
 
+        $validated['rul_id'] = $request->user()->id;
+
         $personnel = Personnel::create([
             'uuid' => Str::uuid(),
+            'rul_id' => $validated['rul_id'],
             'name' => $validated['name'],
             'contact_number' => $validated['contact_number'],
             'serial_number' => $validated['serial_number'],
@@ -62,7 +65,7 @@ class PersonnelController extends Controller
      */
     public function show(string $id)
     {
-        $personnel = Personnel::where('uuid', $id)->first();
+        $personnel = Personnel::where('uuid', $id)->with('rul')->first();
 
         if (!$personnel) {
             return response()->json([

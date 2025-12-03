@@ -17,7 +17,7 @@ class RulProfileController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $profile,
+            'data' => $profile->load('certificates'),
         ]);
     }
     /**

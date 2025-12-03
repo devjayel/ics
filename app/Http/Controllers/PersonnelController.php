@@ -33,6 +33,8 @@ class PersonnelController extends Controller
 
         $validated['uuid'] = \Illuminate\Support\Str::uuid();
 
+        $validated['rul_id'] = auth()->user()->id;
+
         Personnel::create($validated);
 
         return redirect()->route('personnels.index')

@@ -68,7 +68,7 @@ class UserSeeder extends Seeder
         }
         Log::info('==============================================');
         //Create a sample RUL
-        Rul::create([
+        $rul = Rul::create([
             'uuid' => Str::uuid(),
             'name' => 'Bob Smith',
             'contact_number' => '123-456-7890',
@@ -76,12 +76,45 @@ class UserSeeder extends Seeder
             'department' => 'Beureau of Fire Protection',
         ]);
         Log::info('RUL Seeder: Sample RUL created successfully.');
-        //Create a sample Personnel
+        //Create sample Personnel
         Personnel::create([
             'uuid' => Str::uuid(),
+            'rul_id' => $rul->id,
             'name' => 'Alice Johnson',
             'contact_number' => '987-654-3210',
             'serial_number' => '222',
+            'department' => 'Red Cross',
+        ]);
+        Personnel::create([
+            'uuid' => Str::uuid(),
+            'rul_id' => $rul->id,
+            'name' => 'John Martinez',
+            'contact_number' => '09171234567',
+            'serial_number' => '223',
+            'department' => 'Red Cross',
+        ]);
+        Personnel::create([
+            'uuid' => Str::uuid(),
+            'rul_id' => $rul->id,
+            'name' => 'Maria Santos',
+            'contact_number' => '09189876543',
+            'serial_number' => '224',
+            'department' => 'Red Cross',
+        ]);
+        Personnel::create([
+            'uuid' => Str::uuid(),
+            'rul_id' => $rul->id,
+            'name' => 'Carlos Reyes',
+            'contact_number' => '09195551234',
+            'serial_number' => '225',
+            'department' => 'Red Cross',
+        ]);
+        Personnel::create([
+            'uuid' => Str::uuid(),
+            'rul_id' => $rul->id,
+            'name' => 'Sarah Garcia',
+            'contact_number' => '09203334455',
+            'serial_number' => '226',
             'department' => 'Red Cross',
         ]);
     }

@@ -8,11 +8,7 @@ use Illuminate\Support\Facades\Storage;
 class Rul extends Model
 {
     protected $table = 'resident_unit_leaders';
-
-    protected $hidden = [
-        'id'
-    ];
-
+    
     protected $fillable = [
         'uuid',
         'name',
@@ -40,6 +36,10 @@ class Rul extends Model
                 $certificate->delete();
             }
         });
+    }
+
+    public function personnels(){
+        return $this->hasMany(Personnel::class);
     }
 
     public function certificates()
