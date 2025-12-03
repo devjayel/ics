@@ -110,6 +110,44 @@ class LoginController extends Controller
         ], 401);
     }
 
+    private function extractToken(Request $request){
+        $authHeader = $request->header('Authorization');
+        if ($authHeader && preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
+
+    public function validateToken(Request $request){
+        $token = $this->extractToken($request);
+        if ($token) {
+            //try personnel
+            $personnel = Personnel::where('token', $token)->first();
+            if ($personnel) {
+                return response()->json([
+                    'success' => true,
+                    'user' => $personnel,
+                    'role' => 'personnel',
+                ], 200);
+            }
+
+            //try rul
+            $rul = Rul::where('token', $token)->first();
+            if ($rul) {
+                return response()->json([
+                    'success' => true,
+                    'user' => $rul,
+                    'role' => 'rul',
+                ], 200);
+            }
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid token'
+        ], 401);
+    }
+
     public function logout(Request $request){
         $request->user()->currentAccessToken()->delete();
 

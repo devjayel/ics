@@ -18,6 +18,7 @@ Route::middleware("throttle:60,1")->prefix("auth")->group(function () {
     Route::post('/login', [LoginController::class, 'login']);
     Route::post('/login/app', [LoginController::class, 'loginThroughApp']);
     Route::post('/logout/app', [LoginController::class, 'logoutThroughApp']);
+    Route::post('/validate-token', [LoginController::class, 'validateToken']);
 });
 
 Route::middleware(["auth:sanctum", "throttle:60,1"])->group(function () {
