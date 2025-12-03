@@ -5,10 +5,12 @@ namespace Database\Seeders;
 use App\Models\Personnel;
 use App\Models\Rul;
 use App\Models\User;
+use App\Models\Certificate;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
@@ -68,13 +70,39 @@ class UserSeeder extends Seeder
         }
         Log::info('==============================================');
         //Create a sample RUL
+        //Create a signature and certificate for the sample RUL
+        $rulUuid = Str::uuid();
+
         $rul = Rul::create([
-            'uuid' => Str::uuid(),
+            'uuid' => $rulUuid,
             'name' => 'Bob Smith',
             'contact_number' => '123-456-7890',
             'serial_number' => '111',
             'department' => 'Beureau of Fire Protection',
         ]);
+
+        // Copy signature from public assets
+        $sourceSignature = public_path('images/example-signature.jpg');
+        if (file_exists($sourceSignature)) {
+            $signaturePath = 'signatures/' . $rulUuid . '.jpg';
+            Storage::disk('public')->put($signaturePath, file_get_contents($sourceSignature));
+            $rul->update(['signature' => $signaturePath]);
+        }
+
+        // Copy certificate from public assets
+        $sourceCertificate = public_path('images/example-ceritificate.jpg');
+        if (file_exists($sourceCertificate)) {
+            $certificatePath = 'certificates/' . time() . '_' . $rulUuid . '.jpg';
+            Storage::disk('public')->put($certificatePath, file_get_contents($sourceCertificate));
+            
+            Certificate::create([
+                'uuid' => Str::uuid(),
+                'rul_id' => $rul->id,
+                'certificate_name' => 'Certificate - ' . $rul->name . '.jpg',
+                'file_path' => $certificatePath,
+            ]);
+        }
+
         Log::info('RUL Seeder: Sample RUL created successfully.');
         //Create sample Personnel
         Personnel::create([

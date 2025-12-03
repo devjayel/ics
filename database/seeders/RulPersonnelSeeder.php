@@ -9,6 +9,7 @@ use App\Models\Personnel;
 use App\Models\Certificate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Faker\Factory as Faker;
 
 class RulPersonnelSeeder extends Seeder
 {
@@ -17,6 +18,8 @@ class RulPersonnelSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Faker::create();
+        
         // Create storage directories if they don't exist
         Storage::disk('public')->makeDirectory('signatures');
         Storage::disk('public')->makeDirectory('certificates');
@@ -24,8 +27,8 @@ class RulPersonnelSeeder extends Seeder
         $departments = [
             'BFP',
             'PNP',
-            'DOH',
-            'Finance/Administration',
+            'Red Cross',
+            'Search and Rescue',
             'Safety',
         ];
 
@@ -35,7 +38,7 @@ class RulPersonnelSeeder extends Seeder
             
             $rul = Rul::create([
                 'uuid' => $rulUuid,
-                'name' => 'RUL ' . ($index + 1) . ' - ' . $department,
+                'name' => $faker->name(),
                 'contact_number' => '09' . rand(100000000, 999999999),
                 'serial_number' => str_pad($index + 1, 4, '0', STR_PAD_LEFT),
                 'department' => $department,
@@ -75,10 +78,11 @@ class RulPersonnelSeeder extends Seeder
                 Personnel::create([
                     'uuid' => Str::uuid(),
                     'rul_id' => $rul->id,
-                    'name' => 'Personnel ' . (($index * 3) + $i) . ' - ' . $department,
+                    'name' => $faker->name(),
                     'contact_number' => '09' . rand(100000000, 999999999),
-                    'serial_number' => 'PER-' . str_pad((($index * 3) + $i), 4, '0', STR_PAD_LEFT),
+                    'serial_number' => str_pad((($index * 3) + $i), 4, '0', STR_PAD_LEFT),
                     'department' => $department,
+                    'token' => Str::random(60),
                 ]);
             }
         }
