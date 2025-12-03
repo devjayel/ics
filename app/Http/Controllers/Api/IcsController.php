@@ -32,7 +32,6 @@ class IcsController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'order_number' => 'required|string|max:255',
             'start_date' => 'required|date',
             'start_time' => 'required|date_format:H:i',
             'checkin_location' => 'required|string|max:255',
@@ -67,7 +66,6 @@ class IcsController extends Controller
             'uuid' => Str::uuid(),
             'rul_id' => $rul_id,
             'name' => $validated['name'],
-            'order_number' => $validated['order_number'],
             'start_date' => $validated['start_date'],
             'start_time' => $validated['start_time'],
             'checkin_location' => $validated['checkin_location'],
@@ -149,7 +147,6 @@ class IcsController extends Controller
         $validated = $request->validate([
             'rul_id' => 'sometimes|required|exists:resident_unit_leaders,id',
             'name' => 'sometimes|required|string|max:255',
-            'order_number' => 'sometimes|required|string|max:255',
             'start_date' => 'sometimes|required|date',
             'start_time' => 'sometimes|required|date_format:H:i',
             'checkin_location' => 'sometimes|required|string|max:255',
@@ -184,7 +181,6 @@ class IcsController extends Controller
         $ics211Record->update(array_filter([
             'rul_id' => $validated['rul_id'] ?? $ics211Record->rul_id,
             'name' => $validated['name'] ?? $ics211Record->name,
-            'order_number' => $validated['order_number'] ?? $ics211Record->order_number,
             'start_date' => $validated['start_date'] ?? $ics211Record->start_date,
             'start_time' => $validated['start_time'] ?? $ics211Record->start_time,
             'checkin_location' => $validated['checkin_location'] ?? $ics211Record->checkin_location,
