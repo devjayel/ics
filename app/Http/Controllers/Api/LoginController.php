@@ -48,8 +48,7 @@ class LoginController extends Controller
         if ($personnel) {
             //generate token
             $token = Str::random(60);
-            $personnel->token = $token;
-            $personnel->save();
+            Personnel::where('id', $personnel->id)->update(['token' => $token]);
 
             return response()->json([
                 'success' => true,
@@ -64,8 +63,7 @@ class LoginController extends Controller
         if ($rul) {
             //generate token
             $token = Str::random(60);
-            $rul->token = $token;
-            $rul->save();
+            Rul::where('id', $rul->id)->update(['token' => $token]);
 
             return response()->json([
                 'success' => true,

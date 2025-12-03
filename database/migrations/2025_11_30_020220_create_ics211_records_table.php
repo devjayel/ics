@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->time('start_time');
             $table->string('checkin_location');
+            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }

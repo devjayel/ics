@@ -9,6 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RulMiddleware
 {
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return \Symfony\Component\HttpFoundation\Response|\Illuminate\Http\JsonResponse
+     */
     public function handle(Request $request, Closure $next): Response
     {
         $token = $this->extractToken($request);
@@ -26,10 +33,7 @@ class RulMiddleware
 
     private function extractToken(Request $request): ?string
     {
-        $header = $request->header('Authorization');
-        if ($header && str_starts_with($header, 'Bearer ')) {
-            return substr($header, 7);
-        }
-        return $request->header('X-Token') ?? $request->query('token');
+        // Use Laravel helper for bearer token, fall back to header X-Token or query token
+        return $request->bearerToken() ?? $request->header('X-Token') ?? $request->query('token');
     }
 }

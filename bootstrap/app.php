@@ -2,6 +2,8 @@
 
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\PersonnelMiddleware;
+use App\Http\Middleware\RulMiddleware;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -10,9 +12,9 @@ use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__.'/../routes/web.php',
-        commands: __DIR__.'/../routes/console.php',
-        api: __DIR__.'/../routes/api.php',
+        web: __DIR__ . '/../routes/web.php',
+        commands: __DIR__ . '/../routes/console.php',
+        api: __DIR__ . '/../routes/api.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
@@ -23,9 +25,28 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
         ]);
+
+        // Enable default API middleware group
+        $middleware->api();
+
+        $middleware->alias([
+            'rul.auth' => RulMiddleware::class,
+            'personnel.auth' => PersonnelMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->render(function(AuthenticationException $e, $request   ) {
+        // Handle validation errors for API
+        $exceptions->render(function (\Illuminate\Validation\ValidationException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+        });
+        
+        $exceptions->render(function (AuthenticationException $e, $request) {
             if ($request->is('api/*')) {
                 return response()->json([
                     'success' => false,

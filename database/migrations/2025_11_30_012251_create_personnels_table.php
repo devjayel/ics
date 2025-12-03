@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('contact_number');
             $table->string('serial_number')->unique();
             $table->string('department');
-                $table->string('token')->nullable()->unique();
+            $table->string('fcm_token')->nullable();
+            $table->string('token')->nullable()->unique();
+            $table->string('status')->default('active');
             $table->timestamps();
         });
     }

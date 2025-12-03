@@ -33,7 +33,6 @@ return new class extends Migration {
             $table->string('incident_assignment')->nullable();
             $table->string('other_qualifications')->nullable();
             $table->boolean('sent_resl')->default(false);
-            $table->text('remarks')->nullable();
             $table->timestamps();
         });
     }

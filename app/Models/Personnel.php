@@ -8,6 +8,10 @@ use Laravel\Sanctum\HasApiTokens;
 class Personnel extends Model
 {   
     use HasApiTokens;
+
+    protected $hidden = [
+        'id',
+    ];
     protected $fillable = [
         'uuid',
         'name',
@@ -16,6 +20,7 @@ class Personnel extends Model
         'department',
         'fcm_token',
         'token',
+        'status',
     ];
 
 

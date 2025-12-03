@@ -14,17 +14,6 @@ class Ics211Record extends Model
         'start_date',
         'start_time',
         'checkin_location',
-        'checkin_date',
-        'checkin_time',
-        'kind',
-        'type',
-        'resource_identifier',
-        'department',
-        'departure_point_of_origin',
-        'departure_date',
-        'departure_time',
-        'departure_method_of_travel',
-        'other_qualifications',
         'remarks',
     ];
 
@@ -33,9 +22,9 @@ class Ics211Record extends Model
         return $this->belongsTo(Rul::class);
     }
 
-    public function personnelCheckinDetails()
+    public function checkInDetails()
     {
-        return $this->hasMany(PersonnelCheckinDetailIcs211Record::class);
+        return $this->hasMany(CheckInDetails::class);
     }
 
     public function getRouteKeyName()
