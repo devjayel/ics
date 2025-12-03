@@ -57,7 +57,7 @@ class IcsSeeder extends Seeder
 
         $checkinLocations = ['Base', 'Camp', 'Staging Area', 'ICP (Incident Command Post)'];
         $kinds = ['Crews', 'Bulldozers', 'Engines', 'SAR teams (Search & Rescue team)'];
-        $types = ['T1 - Highest capability', 'T2 - Medium', 'T3 - Basic', 'T4 - Minimum or auxiliary'];
+        $types = ['T1', 'T2', 'T3', 'T4'];
         $resourceIdentifiers = ['Single resource', 'Strike team', 'Task force'];
         $departureMethods = ['Bus', 'Truck', 'Engine', 'Personal vehicle', 'Helicopter', 'ATV', 'Motorcycle', 'Van'];
 
