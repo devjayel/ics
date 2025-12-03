@@ -37,6 +37,17 @@ class RulProfileController extends Controller
             'remove_certificates' => 'nullable|array',
             'remove_certificates.*' => 'exists:certificates,uuid',
             'remove_signature' => 'nullable|boolean',
+        ], [
+            'name.required' => 'Name is required.',
+            'name.max' => 'Name must not exceed 255 characters.',
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.max' => 'Contact number must not exceed 255 characters.',
+            'department.required' => 'Department is required.',
+            'department.max' => 'Department must not exceed 255 characters.',
+            'certificates.*.file' => 'Each certificate must be a valid file.',
+            'certificates.*.mimes' => 'Certificates must be PDF, JPG, JPEG, or PNG files.',
+            'certificates.*.max' => 'Each certificate must not exceed 10MB.',
+            'remove_certificates.*.exists' => 'Certificate not found.',
         ]);
 
         // Update basic profile fields (excluding serial_number)

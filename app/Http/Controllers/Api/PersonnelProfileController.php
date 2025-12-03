@@ -31,6 +31,13 @@ class PersonnelProfileController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'contact_number' => 'sometimes|required|string|max:255',
             'department' => 'sometimes|required|string|max:255',
+        ], [
+            'name.required' => 'Name is required.',
+            'name.max' => 'Name must not exceed 255 characters.',
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.max' => 'Contact number must not exceed 255 characters.',
+            'department.required' => 'Department is required.',
+            'department.max' => 'Department must not exceed 255 characters.',
         ]);
 
         $personnel->update(array_filter([

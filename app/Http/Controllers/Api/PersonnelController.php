@@ -31,6 +31,16 @@ class PersonnelController extends Controller
             'contact_number' => 'required|string|max:20',
             'serial_number' => 'required|string|max:100|unique:personnels,serial_number',
             'department' => 'required|string|max:100',
+        ], [
+            'name.required' => 'Name is required.',
+            'name.max' => 'Name must not exceed 255 characters.',
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.max' => 'Contact number must not exceed 20 characters.',
+            'serial_number.required' => 'Serial number is required.',
+            'serial_number.max' => 'Serial number must not exceed 100 characters.',
+            'serial_number.unique' => 'This serial number is already registered.',
+            'department.required' => 'Department is required.',
+            'department.max' => 'Department must not exceed 100 characters.',
         ]);
 
         $personnel = Personnel::create([
@@ -86,6 +96,16 @@ class PersonnelController extends Controller
             'contact_number' => 'sometimes|required|string|max:20',
             'serial_number' => 'sometimes|required|string|max:100|unique:personnels,serial_number,'.$personnel->id,
             'department' => 'sometimes|required|string|max:100',
+        ], [
+            'name.required' => 'Name is required.',
+            'name.max' => 'Name must not exceed 255 characters.',
+            'contact_number.required' => 'Contact number is required.',
+            'contact_number.max' => 'Contact number must not exceed 20 characters.',
+            'serial_number.required' => 'Serial number is required.',
+            'serial_number.max' => 'Serial number must not exceed 100 characters.',
+            'serial_number.unique' => 'This serial number is already registered.',
+            'department.required' => 'Department is required.',
+            'department.max' => 'Department must not exceed 100 characters.',
         ]);
 
         $personnel->update($validated);
