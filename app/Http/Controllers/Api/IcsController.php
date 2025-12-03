@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreIcs211RecordRequest;
+use App\Http\Requests\UpdateIcs211RecordRequest;
+use App\Http\Resources\Ics211RecordResource;
 use App\Models\Ics211Record;
 use App\Models\CheckInDetails;
 use Illuminate\Http\Request;
@@ -19,70 +22,19 @@ class IcsController extends Controller
         
         return response()->json([
             'success' => true,
-            'data' => $records,
+            'data' => Ics211RecordResource::collection($records),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreIcs211RecordRequest $request)
     {
         $rul_id = $request->user()->id;
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'checkin_location' => 'required|string|max:255',
-            'remarks' => 'nullable|string',
-            
-            // Check-in details array validation
-            'check_in_details' => 'nullable|array',
-            'check_in_details.*.personnel_id' => 'nullable|exists:personnels,id',
-            'check_in_details.*.order_request_number' => 'required|string|max:255',
-            'check_in_details.*.checkin_date' => 'required|date',
-            'check_in_details.*.checkin_time' => 'required|date_format:H:i',
-            'check_in_details.*.kind' => 'required|string|max:255',
-            'check_in_details.*.category' => 'required|string|max:255',
-            'check_in_details.*.type' => 'required|string|max:255',
-            'check_in_details.*.resource_identifier' => 'required|string|max:255',
-            'check_in_details.*.name_of_leader' => 'required|string|max:255',
-            'check_in_details.*.contact_information' => 'required|string|max:255',
-            'check_in_details.*.quantity' => 'required|integer|min:1',
-            'check_in_details.*.department' => 'required|string|max:255',
-            'check_in_details.*.departure_point_of_origin' => 'required|string|max:255',
-            'check_in_details.*.departure_date' => 'required|date',
-            'check_in_details.*.departure_time' => 'required|date_format:H:i',
-            'check_in_details.*.departure_method_of_travel' => 'required|string|max:255',
-            'check_in_details.*.with_manifest' => 'nullable|boolean',
-            'check_in_details.*.incident_assignment' => 'nullable|string|max:255',
-            'check_in_details.*.other_qualifications' => 'nullable|string',
-            'check_in_details.*.sent_resl' => 'nullable|boolean',
-        ], [
-            'check_in_details.*.personnel_id.exists' => 'Personnel not found in check-in detail.',
-            'check_in_details.*.order_request_number.required' => 'Order request number is required in check-in detail.',
-            'check_in_details.*.checkin_date.required' => 'Check-in date is required in check-in detail.',
-            'check_in_details.*.checkin_date.date' => 'Check-in date must be a valid date.',
-            'check_in_details.*.checkin_time.required' => 'Check-in time is required in check-in detail.',
-            'check_in_details.*.checkin_time.date_format' => 'Check-in time must be in HH:MM format.',
-            'check_in_details.*.kind.required' => 'Kind is required in check-in detail.',
-            'check_in_details.*.category.required' => 'Category is required in check-in detail.',
-            'check_in_details.*.type.required' => 'Type is required in check-in detail.',
-            'check_in_details.*.resource_identifier.required' => 'Resource identifier is required in check-in detail.',
-            'check_in_details.*.name_of_leader.required' => 'Name of leader is required in check-in detail.',
-            'check_in_details.*.contact_information.required' => 'Contact information is required in check-in detail.',
-            'check_in_details.*.quantity.required' => 'Quantity is required in check-in detail.',
-            'check_in_details.*.quantity.integer' => 'Quantity must be a number.',
-            'check_in_details.*.quantity.min' => 'Quantity must be at least 1.',
-            'check_in_details.*.department.required' => 'Department is required in check-in detail.',
-            'check_in_details.*.departure_point_of_origin.required' => 'Departure point of origin is required in check-in detail.',
-            'check_in_details.*.departure_date.required' => 'Departure date is required in check-in detail.',
-            'check_in_details.*.departure_date.date' => 'Departure date must be a valid date.',
-            'check_in_details.*.departure_time.required' => 'Departure time is required in check-in detail.',
-            'check_in_details.*.departure_time.date_format' => 'Departure time must be in HH:MM format.',
-            'check_in_details.*.departure_method_of_travel.required' => 'Departure method of travel is required in check-in detail.',
-        ]);
+        $validated = $request->validated();
+
 
         // Create ICS 211 Record
         $ics211Record = Ics211Record::create([
@@ -131,7 +83,7 @@ class IcsController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'ICS 211 record created successfully',
-            'data' => $ics211Record,
+            'data' => new Ics211RecordResource($ics211Record),
         ], 201);
     }
 
@@ -151,14 +103,14 @@ class IcsController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $ics211Record,
+            'data' => new Ics211RecordResource($ics211Record),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $ics211Record)
+    public function update(UpdateIcs211RecordRequest $request, $ics211Record)
     {
         $ics211Record = Ics211Record::where('uuid', $ics211Record)->first();
         if (!$ics211Record) {
@@ -167,66 +119,10 @@ class IcsController extends Controller
                 'message' => 'ICS 211 record not found',
             ], 404);
         }
-        $validated = $request->validate([
-            'rul_id' => 'sometimes|required|exists:resident_unit_leaders,id',
-            'name' => 'sometimes|required|string|max:255',
-            'start_date' => 'sometimes|required|date',
-            'start_time' => 'sometimes|required|date_format:H:i',
-            'checkin_location' => 'sometimes|required|string|max:255',
-            'remarks' => 'nullable|string',
-            
-            // Check-in details array validation
-            'check_in_details' => 'nullable|array',
-            'check_in_details.*.personnel_id' => 'nullable|exists:personnels,id',
-            'check_in_details.*.uuid' => 'nullable|exists:check_in_details,uuid',
-            'check_in_details.*.order_request_number' => 'required|string|max:255',
-            'check_in_details.*.checkin_date' => 'required|date',
-            'check_in_details.*.checkin_time' => 'required|date_format:H:i',
-            'check_in_details.*.kind' => 'required|string|max:255',
-            'check_in_details.*.category' => 'required|string|max:255',
-            'check_in_details.*.type' => 'required|string|max:255',
-            'check_in_details.*.resource_identifier' => 'required|string|max:255',
-            'check_in_details.*.name_of_leader' => 'required|string|max:255',
-            'check_in_details.*.contact_information' => 'required|string|max:255',
-            'check_in_details.*.quantity' => 'required|integer|min:1',
-            'check_in_details.*.department' => 'required|string|max:255',
-            'check_in_details.*.departure_point_of_origin' => 'required|string|max:255',
-            'check_in_details.*.departure_date' => 'required|date',
-            'check_in_details.*.departure_time' => 'required|date_format:H:i',
-            'check_in_details.*.departure_method_of_travel' => 'required|string|max:255',
-            'check_in_details.*.with_manifest' => 'nullable|boolean',
-            'check_in_details.*.incident_assignment' => 'nullable|string|max:255',
-            'check_in_details.*.other_qualifications' => 'nullable|string',
-            'check_in_details.*.sent_resl' => 'nullable|boolean',
-        ], [
-            'check_in_details.*.personnel_id.exists' => 'Personnel not found in check-in detail.',
-            'check_in_details.*.uuid.exists' => 'Check-in detail not found.',
-            'check_in_details.*.order_request_number.required' => 'Order request number is required in check-in detail.',
-            'check_in_details.*.checkin_date.required' => 'Check-in date is required in check-in detail.',
-            'check_in_details.*.checkin_date.date' => 'Check-in date must be a valid date.',
-            'check_in_details.*.checkin_time.required' => 'Check-in time is required in check-in detail.',
-            'check_in_details.*.checkin_time.date_format' => 'Check-in time must be in HH:MM format.',
-            'check_in_details.*.kind.required' => 'Kind is required in check-in detail.',
-            'check_in_details.*.category.required' => 'Category is required in check-in detail.',
-            'check_in_details.*.type.required' => 'Type is required in check-in detail.',
-            'check_in_details.*.resource_identifier.required' => 'Resource identifier is required in check-in detail.',
-            'check_in_details.*.name_of_leader.required' => 'Name of leader is required in check-in detail.',
-            'check_in_details.*.contact_information.required' => 'Contact information is required in check-in detail.',
-            'check_in_details.*.quantity.required' => 'Quantity is required in check-in detail.',
-            'check_in_details.*.quantity.integer' => 'Quantity must be a number.',
-            'check_in_details.*.quantity.min' => 'Quantity must be at least 1.',
-            'check_in_details.*.department.required' => 'Department is required in check-in detail.',
-            'check_in_details.*.departure_point_of_origin.required' => 'Departure point of origin is required in check-in detail.',
-            'check_in_details.*.departure_date.required' => 'Departure date is required in check-in detail.',
-            'check_in_details.*.departure_date.date' => 'Departure date must be a valid date.',
-            'check_in_details.*.departure_time.required' => 'Departure time is required in check-in detail.',
-            'check_in_details.*.departure_time.date_format' => 'Departure time must be in HH:MM format.',
-            'check_in_details.*.departure_method_of_travel.required' => 'Departure method of travel is required in check-in detail.',
-        ]);
+        $validated = $request->validated();
 
         // Update ICS 211 Record
         $ics211Record->update(array_filter([
-            'rul_id' => $validated['rul_id'] ?? $ics211Record->rul_id,
             'name' => $validated['name'] ?? $ics211Record->name,
             'start_date' => $validated['start_date'] ?? $ics211Record->start_date,
             'start_time' => $validated['start_time'] ?? $ics211Record->start_time,
@@ -308,7 +204,7 @@ class IcsController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'ICS 211 record updated successfully',
-            'data' => $ics211Record,
+            'data' => new Ics211RecordResource($ics211Record),
         ]);
     }
 
@@ -331,11 +227,12 @@ class IcsController extends Controller
 
         $ics211Record->status = $status;
         $ics211Record->save();
+        $ics211Record->load(['rul', 'checkInDetails.personnel']);
 
         return response()->json([
             'success' => true,
             'message' => 'ICS 211 record status updated successfully',
-            'data' => $ics211Record,
+            'data' => new Ics211RecordResource($ics211Record),
         ]);
     }
 
