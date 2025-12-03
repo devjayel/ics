@@ -50,7 +50,8 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function(
     Route::post('/task/{id}/delete', [TaskController::class, 'destroy']);
     Route::post('/task/{id}/complete', [TaskController::class, 'complete']);
     //managing own profile
-    Route::resource('profile', RulProfileController::class);
+    Route::get('/profile/{id}', [RulProfileController::class, 'show']);
+    Route::post('/profile/{id}/edit', [RulProfileController::class, 'update']);
 });
 
 //personnel
