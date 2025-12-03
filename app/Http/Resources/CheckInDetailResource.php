@@ -17,6 +17,7 @@ class CheckInDetailResource extends JsonResource
     {
         return [
             'uuid' => $this->uuid,
+            'personnel_id' => $this->personnel_id,
             'order_request_number' => $this->order_request_number,
             'checkin_date' => $this->checkin_date ? Carbon::parse($this->checkin_date)->format('Y-m-d') : null,
             'checkin_time' => $this->checkin_time ? Carbon::parse($this->checkin_time)->format('H:i') : null,
