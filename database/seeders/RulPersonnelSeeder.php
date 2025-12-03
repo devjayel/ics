@@ -9,7 +9,6 @@ use App\Models\Personnel;
 use App\Models\Certificate;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
-use Faker\Factory as Faker;
 
 class RulPersonnelSeeder extends Seeder
 {
@@ -18,7 +17,13 @@ class RulPersonnelSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        // List of Filipino names for RULs and Personnel
+        $names = [
+            'Juan Dela Cruz', 'Maria Santos', 'Jose Rizal', 'Ana Garcia', 'Pedro Martinez',
+            'Carmen Reyes', 'Miguel Torres', 'Rosa Hernandez', 'Antonio Lopez', 'Isabel Flores',
+            'Ramon Gonzales', 'Teresa Ramos', 'Carlos Mendoza', 'Luz Castillo', 'Fernando Aquino',
+            'Sofia Villanueva', 'Ricardo Chavez', 'Elena Morales', 'Manuel Santiago', 'Victoria Cruz',
+        ];
         
         // Create storage directories if they don't exist
         Storage::disk('public')->makeDirectory('signatures');
@@ -32,13 +37,15 @@ class RulPersonnelSeeder extends Seeder
             'Safety',
         ];
 
+        $nameIndex = 0;
+
         foreach ($departments as $index => $department) {
             // Create RUL
             $rulUuid = Str::uuid();
             
             $rul = Rul::create([
                 'uuid' => $rulUuid,
-                'name' => $faker->name(),
+                'name' => $names[$nameIndex++ % count($names)],
                 'contact_number' => '09' . rand(100000000, 999999999),
                 'serial_number' => str_pad($index + 1, 4, '0', STR_PAD_LEFT),
                 'department' => $department,
@@ -78,7 +85,7 @@ class RulPersonnelSeeder extends Seeder
                 Personnel::create([
                     'uuid' => Str::uuid(),
                     'rul_id' => $rul->id,
-                    'name' => $faker->name(),
+                    'name' => $names[$nameIndex++ % count($names)],
                     'contact_number' => '09' . rand(100000000, 999999999),
                     'serial_number' => str_pad((($index * 3) + $i), 4, '0', STR_PAD_LEFT),
                     'department' => $department,
