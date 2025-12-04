@@ -42,7 +42,8 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function 
     Route::post('/ics/{id}/edit', [IcsController::class, 'update']);
     Route::post('/ics/{id}/delete', [IcsController::class, 'destroy']);
     Route::post('/ics/{id}/status/{status}', [IcsController::class, 'updateStatus']);
-
+    Route::post('/ics/checkin/{uuid}/status', [IcsController::class, 'updateCheckinDetailStatus']);
+    
     //management of CheckInDetailHistories
     Route::get('/ics/checkin/{id}/history', [CheckInDetailHistoriesController::class, 'show']);
     Route::post('/ics/checkin/history/{id}/status/{status}', [CheckInDetailHistoriesController::class, 'updateStatus']);

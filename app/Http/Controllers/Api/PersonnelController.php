@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StorePersonnelRequest;
+use App\Models\CheckInDetails;
 use App\Models\Personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -97,7 +98,7 @@ class PersonnelController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'contact_number' => 'sometimes|required|string|max:20',
-            'serial_number' => 'sometimes|required|string|max:100|unique:personnels,serial_number,'.$personnel->id,
+            'serial_number' => 'sometimes|required|string|max:100|unique:personnels,serial_number,' . $personnel->id,
             'department' => 'sometimes|required|string|max:100',
         ], [
             'name.required' => 'Name is required.',
@@ -117,6 +118,32 @@ class PersonnelController extends Controller
             'success' => true,
             'data' => $personnel->with("rul")->first(),
             'message' => 'Personnel updated successfully',
+        ]);
+    }
+
+    public function updateStatus($uuid, Request $request)
+    {
+        $personnel = Personnel::where('uuid', $uuid)->first();
+
+        if (!$personnel) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Personnel not found',
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'checkin_details_id' => 'required|exists:check_in_details,id',
+            'status' => 'required|string|in:available,staging,assigned,active,demobilized,out_of_service,standby',
+        ]);
+        
+        $personnel->status = $validated['status'];
+        $personnel->save();
+
+        return response()->json([
+            'success' => true,
+            'data' => $personnel->with("rul")->first(),
+            'message' => 'Personnel status updated successfully',
         ]);
     }
 

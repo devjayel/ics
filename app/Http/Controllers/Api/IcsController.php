@@ -217,14 +217,19 @@ class IcsController extends Controller
             ], 404);
         }
 
-        $validStatuses = ['active', 'inactive', 'closed'];
-        if (!in_array($status, $validStatuses)) {
+        $validStatuses = ['pending', 'ongoing', 'completed'];
+        if (!in_array($status, haystack: $validStatuses)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid status provided',
             ], 400);
         }
 
+        $validated = request()->validate([
+            'remarks' => 'nullable|string',
+        ]);
+
+        $ics211Record->remarks = $validated['remarks'] ?? $ics211Record->remarks;
         $ics211Record->status = $status;
         $ics211Record->save();
         $ics211Record->load(['rul', 'checkInDetails.personnel']);
@@ -233,6 +238,30 @@ class IcsController extends Controller
             'success' => true,
             'message' => 'ICS 211 record status updated successfully',
             'data' => new Ics211RecordResource($ics211Record),
+        ]);
+    }
+
+    public function updateCheckinDetailStatus($uuid){
+        $checkInDetail = CheckInDetails::where('uuid', $uuid)->first();
+        if (!$checkInDetail) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Check-in detail not found',
+            ], 404);
+        }
+
+        $validated = request()->validate([
+            'status' => 'required|string|in:pending,ongoing,completed,cancelled',
+        ]);
+
+        $checkInDetail->status = $validated['status'];
+        $checkInDetail->save();
+        $checkInDetail->load(['personnel']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Check-in detail status updated successfully',
+            'data' => $checkInDetail,
         ]);
     }
 
