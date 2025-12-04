@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RulResource;
 use App\Models\Personnel;
 use App\Models\Rul;
 use Illuminate\Http\Request;
@@ -56,7 +57,7 @@ class LoginController extends Controller
         }
 
         //try on rul
-        $rul = Rul::where('serial_number', $credentials['serial_number'])->first();
+        $rul = Rul::with('certificates')->where('serial_number', $credentials['serial_number'])->first();
         if ($rul) {
             //generate token
             $token = Str::random(60);
@@ -65,7 +66,7 @@ class LoginController extends Controller
             return response()->json([
                 'success' => true,
                 'token' => $token,
-                'user' => $rul,
+                'user' => new RulResource($rul),
                 'role' => 'rul',
             ], 200);
         }
@@ -132,11 +133,11 @@ class LoginController extends Controller
             }
 
             //try rul
-            $rul = Rul::where('token', $token)->first();
+            $rul = Rul::with('certificates')->where('token', $token)->first();
             if ($rul) {
                 return response()->json([
                     'success' => true,
-                    'user' => $rul,
+                    'user' => new RulResource($rul),
                     'role' => 'rul',
                 ], 200);
             }

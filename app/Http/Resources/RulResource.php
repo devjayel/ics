@@ -21,6 +21,7 @@ class RulResource extends JsonResource
             'serial_number' => $this->serial_number,
             'department' => $this->department,
             'signature' => $this->signature ? asset('storage/' . $this->signature) : null,
+            'certificates' => CertificateResource::collection($this->whenLoaded('certificates')),
         ];
     }
 }

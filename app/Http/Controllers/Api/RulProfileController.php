@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\RulResource;
 use App\Models\Rul;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,7 @@ class RulProfileController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $profile->load('certificates'),
+            'data' => new RulResource($profile->load('certificates')),
         ]);
     }
     /**

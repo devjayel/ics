@@ -19,7 +19,7 @@ class IcsController extends Controller
      */
     public function index()
     {
-        $records = Ics211Record::with(['rul', 'checkInDetails.personnel'])->get();
+        $records = Ics211Record::with(['rul.certificates', 'checkInDetails.personnel'])->get();
         
         return response()->json([
             'success' => true,
