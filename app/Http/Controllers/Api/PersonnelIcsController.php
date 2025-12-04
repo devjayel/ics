@@ -34,10 +34,9 @@ class PersonnelIcsController extends Controller
 
     public function latest()
     {
-        $personnel = request()->user();
-        $personnelId = $personnel->id;
+
         $record = CheckInDetails::with(['ics211Record.rul.certificates', 'personnel'])
-            ->where('personnel_id', $personnelId)
+            ->where('personnel_id', request()->user()->id)
             ->where('status', 'pending')
             ->latest()
             ->first();
@@ -47,7 +46,7 @@ class PersonnelIcsController extends Controller
                 'success' => false,
                 'message' => 'No pending ICS 211 record found',
                 'data' => [],
-            ], 404);
+            ], 200);
         }}
         
         return response()->json([
@@ -68,7 +67,7 @@ class PersonnelIcsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'ICS 211 record not found',
-            ], 404);
+            ], 200);
         }
         return response()->json([
             'success' => true,
