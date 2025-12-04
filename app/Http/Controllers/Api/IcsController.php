@@ -84,7 +84,7 @@ class IcsController extends Controller
         }
 
         // Load relationships
-        $ics211Record->load(['rul', 'checkInDetails.personnel']);
+        $ics211Record->load(['rul.certificates', 'checkInDetails.personnel']);
 
         return response()->json([
             'success' => true,
@@ -105,7 +105,7 @@ class IcsController extends Controller
                 'message' => 'ICS 211 record not found',
             ], 404);
         }
-        $ics211Record->load(['rul', 'checkInDetails.personnel']);
+        $ics211Record->load(['rul.certificates', 'checkInDetails.personnel']);
 
         return response()->json([
             'success' => true,
@@ -210,7 +210,7 @@ class IcsController extends Controller
         }
 
         // Load relationships
-        $ics211Record->load(['rul', 'checkInDetails.personnel']);
+        $ics211Record->load(['rul.certificates', 'checkInDetails.personnel']);
 
         return response()->json([
             'success' => true,
@@ -252,7 +252,7 @@ class IcsController extends Controller
             }
         }
 
-        $ics211Record->load(['rul', 'checkInDetails.personnel']);
+        $ics211Record->load(['rul.certificates', 'checkInDetails.personnel']);
 
         return response()->json([
             'success' => true,
