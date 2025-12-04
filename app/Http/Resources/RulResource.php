@@ -15,6 +15,7 @@ class RulResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'uuid' => $this->uuid,
             'name' => $this->name,
             'contact_number' => $this->contact_number,
