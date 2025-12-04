@@ -53,7 +53,7 @@ class IcsSeeder extends Seeder
         ];
 
         $statuses = ['completed', 'ongoing', 'pending'];
-        $checkInDetailStatuses = ['available', 'staging', 'assigned', 'active', 'demobilized', 'out_of_service', 'standby'];
+        $checkInDetailStatuses = ['available', 'staging', 'assigned', 'active', 'demobalized', 'out_of_service', 'standby'];
         $departments = ['Fire Operations', 'Medical Services', 'Logistics Support', 'Search and Rescue', 'Emergency Management'];
 
         $checkinLocations = ['Base', 'Camp', 'Staging Area', 'ICP (Incident Command Post)'];
