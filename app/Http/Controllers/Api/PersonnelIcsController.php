@@ -37,7 +37,7 @@ class PersonnelIcsController extends Controller
 
         $record = CheckInDetails::with(['ics211Record.rul.certificates', 'personnel'])
             ->where('personnel_id', request()->user()->id)
-            ->where('status', 'pending')
+            ->whereRelation('ics211Record','status', 'pending')
             ->latest()
             ->first();
         
