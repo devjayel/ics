@@ -62,7 +62,7 @@ class PersonnelIcsController extends Controller
     public function show($uuid)
     {
          $records = CheckInDetails::with(['ics211Record.rul.certificates', 'personnel'])
-            ->where('personnel_id', request())
+            ->where('personnel_id', request()->user()->id)
             ->where('uuid', $uuid)
             ->first();
         if (!$records) {
