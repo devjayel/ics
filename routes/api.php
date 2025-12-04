@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AnalyticController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\IcsController;
 use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\PersonnelIcsController;
 use App\Http\Controllers\Api\PersonnelProfileController;
 use App\Http\Controllers\Api\PersonnelTaskController;
 use App\Http\Controllers\Api\RulProfileController;
@@ -67,10 +68,10 @@ Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->gro
     //analytics
     Route::get('/analytics', [AnalyticController::class, 'index']);
 
-    //manage tasks
-    Route::get('/task', [PersonnelTaskController::class, 'index']);
-    Route::get('/task/{id}/show', [PersonnelTaskController::class, 'show']);
-    Route::post('/task/{id}/status/{status}', [PersonnelTaskController::class, 'updateStatus']);
+    //Check own ICS 211 records
+    Route::get('/ics', [PersonnelIcsController::class, 'index']);
+    Route::get('/ics/{id}/show', [PersonnelIcsController::class, 'show']);
+
 
     //CheckInDetailsHistories
     Route::get('/ics/checkin/{id}/history', [CheckInDetailHistoriesController::class, 'show']);

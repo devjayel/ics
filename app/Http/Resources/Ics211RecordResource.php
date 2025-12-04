@@ -16,6 +16,7 @@ class Ics211RecordResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id' => $this->id,
             'uuid' => $this->uuid,
             'name' => $this->name,
             'start_date' => $this->start_date ? Carbon::parse($this->start_date)->format('Y-m-d') : null,
