@@ -23,6 +23,7 @@ class Ics211RecordResource extends JsonResource
             'checkin_location' => $this->checkin_location,
             'remarks' => $this->remarks,
             'status' => $this->status,
+            'rul_id' => $this->rul_id,
             'rul' => new RulResource($this->whenLoaded('rul')),
             'check_in_details' => CheckInDetailResource::collection($this->whenLoaded('checkInDetails')),
             'total_check_ins' => $this->when(
