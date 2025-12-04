@@ -53,6 +53,7 @@ class IcsSeeder extends Seeder
         ];
 
         $statuses = ['completed', 'ongoing', 'pending'];
+        $checkInDetailStatuses = ['available', 'staging', 'assigned', 'active', 'demobilized', 'out_of_service', 'standby'];
         $departments = ['Fire Operations', 'Medical Services', 'Logistics Support', 'Search and Rescue', 'Emergency Management'];
 
         $checkinLocations = ['Base', 'Camp', 'Staging Area', 'ICP (Incident Command Post)'];
@@ -117,7 +118,7 @@ class IcsSeeder extends Seeder
                     'incident_assignment' => $personnelPositions[array_rand($personnelPositions)],
                     'other_qualifications' => 'Certified emergency responder with ' . rand(2, 10) . ' years experience',
                     'sent_resl' => rand(0, 1),
-                    'status' => $statuses[array_rand($statuses)],
+                    'status' => $checkInDetailStatuses[array_rand($checkInDetailStatuses)],
                     'created_at' => $startDate . ' ' . $checkInTime,
                 ]);
             }
@@ -161,7 +162,7 @@ class IcsSeeder extends Seeder
                     'incident_assignment' => $equipment['position'],
                     'other_qualifications' => 'Equipment inspection completed, fully operational',
                     'sent_resl' => rand(0, 1),
-                    'status' => $statuses[array_rand($statuses)],
+                    'status' => $checkInDetailStatuses[array_rand($checkInDetailStatuses)],
                     'created_at' => $startDate . ' ' . $checkInTime,
                 ]);
             }

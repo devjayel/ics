@@ -251,7 +251,7 @@ class IcsController extends Controller
         }
 
         $validated = request()->validate([
-            'status' => 'required|string|in:pending,ongoing,completed,cancelled',
+            'status' => 'required|string|in:available,staging,assigned,active,demobilized,out_of_service,standby',
         ]);
 
         $checkInDetail->status = $validated['status'];
