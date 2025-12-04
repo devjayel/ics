@@ -59,20 +59,21 @@ class PersonnelIcsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($ics211Record)
+    public function show($uuid)
     {
-        $ics211Record = Ics211Record::where('uuid', $ics211Record)->first();
-        if (!$ics211Record) {
+         $records = CheckInDetails::with(['ics211Record.rul.certificates', 'personnel'])
+            ->where('personnel_id', request())
+            ->where('uuid', $uuid)
+            ->first();
+        if (!$records) {
             return response()->json([
                 'success' => false,
                 'message' => 'ICS 211 record not found',
             ], 404);
         }
-        $ics211Record->load(['rul.certificates', 'checkInDetails.personnel']);
-
         return response()->json([
             'success' => true,
-            'data' => new Ics211RecordResource($ics211Record),
+            'data' => new PersonnelIcsResource($records),
         ]);
     }
 
