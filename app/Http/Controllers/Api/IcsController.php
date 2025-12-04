@@ -78,7 +78,7 @@ class IcsController extends Controller
 
                 // Update personnel status to assigned if personnel_id exists
                 if (!empty($checkInDetail['personnel_id'])) {
-                    Personnel::where('id', $checkInDetail['personnel_id'])->update(['status' => 'assigned']);
+                    Personnel::where('id', $checkInDetail['personnel_id'])->update(['status' => 'standby']);
                 }
             }
         }

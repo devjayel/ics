@@ -70,12 +70,9 @@ Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->gro
 
     //Check own ICS 211 records
     Route::get('/ics', [PersonnelIcsController::class, 'index']);
+    Route::get('/ics/latest', [PersonnelIcsController::class, 'latest']);
     Route::get('/ics/{id}/show', [PersonnelIcsController::class, 'show']);
-
-
-    //CheckInDetailsHistories
-    Route::get('/ics/checkin/{id}/history', [CheckInDetailHistoriesController::class, 'show']);
-    Route::post('/ics/checkin/history/{id}/status/{status}', [CheckInDetailHistoriesController::class, 'updateStatus']);
+    Route::post('/ics/checkin/{uuid}/status', [PersonnelIcsController::class, 'updateCheckinDetailStatus']);
 
     //manage own profile
     Route::get('/profile', [PersonnelProfileController::class, 'show']);
