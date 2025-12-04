@@ -61,8 +61,7 @@ class PersonnelIcsController extends Controller
      */
     public function show($uuid)
     {
-         $records = CheckInDetails::with(['ics211Record.rul.certificates', 'personnel'])
-            ->where('personnel_id', request()->user()->id)
+         $records = Ics211Record::with(['rul.certificates', 'checkInDetails.personnel'])
             ->where('uuid', $uuid)
             ->first();
         if (!$records) {
@@ -73,7 +72,7 @@ class PersonnelIcsController extends Controller
         }
         return response()->json([
             'success' => true,
-            'data' => new PersonnelIcsResource($records),
+            'data' => new Ics211RecordResource($records),
         ]);
     }
 
