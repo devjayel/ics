@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('department');
             $table->string('fcm_token')->nullable();
             $table->string('token')->nullable()->unique();
-            $table->string('status')->default('active');
+            $table->string('status')->default('available');
             $table->timestamps();
         });
     }

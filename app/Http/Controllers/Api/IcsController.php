@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateIcs211RecordRequest;
 use App\Http\Resources\Ics211RecordResource;
 use App\Models\Ics211Record;
 use App\Models\CheckInDetails;
+use App\Models\Personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -74,6 +75,11 @@ class IcsController extends Controller
                     'other_qualifications' => $checkInDetail['other_qualifications'] ?? null,
                     'sent_resl' => $checkInDetail['sent_resl'] ?? false,
                 ]);
+
+                // Update personnel status to assigned if personnel_id exists
+                if (!empty($checkInDetail['personnel_id'])) {
+                    Personnel::where('id', $checkInDetail['personnel_id'])->update(['status' => 'assigned']);
+                }
             }
         }
 
@@ -194,6 +200,11 @@ class IcsController extends Controller
                         'other_qualifications' => $checkInDetail['other_qualifications'] ?? null,
                         'sent_resl' => $checkInDetail['sent_resl'] ?? false,
                     ]);
+
+                    // Update personnel status to assigned if personnel_id exists
+                    if (!empty($checkInDetail['personnel_id'])) {
+                        Personnel::where('id', $checkInDetail['personnel_id'])->update(['status' => 'assigned']);
+                    }
                 }
             }
         }
@@ -232,6 +243,15 @@ class IcsController extends Controller
         $ics211Record->remarks = $validated['remarks'] ?? $ics211Record->remarks;
         $ics211Record->status = $status;
         $ics211Record->save();
+
+        // If status is completed, update all associated personnel status to available
+        if ($status === 'completed') {
+            $personnelIds = $ics211Record->checkInDetails()->whereNotNull('personnel_id')->pluck('personnel_id')->toArray();
+            if (!empty($personnelIds)) {
+                Personnel::whereIn('id', $personnelIds)->update(['status' => 'available']);
+            }
+        }
+
         $ics211Record->load(['rul', 'checkInDetails.personnel']);
 
         return response()->json([
@@ -256,6 +276,12 @@ class IcsController extends Controller
 
         $checkInDetail->status = $validated['status'];
         $checkInDetail->save();
+
+        if ($checkInDetail->personnel_id) {
+            // Update personnel status to match check-in detail status
+            Personnel::where('id', $checkInDetail->personnel_id)->update(['status' => $validated['status']]);
+        }
+
         $checkInDetail->load(['personnel']);
 
         return response()->json([
