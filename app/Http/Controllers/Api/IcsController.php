@@ -11,16 +11,23 @@ use App\Models\CheckInDetails;
 use App\Models\Personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Services\PusherChannelServices;
 
 class IcsController extends Controller
 {
+    protected $pusherService;
+    public function __construct(PusherChannelServices $pusherService)
+    {
+        $this->pusherService = $pusherService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $records = Ics211Record::with(['rul.certificates', 'checkInDetails.personnel'])->get();
-        
+
         return response()->json([
             'success' => true,
             'data' => Ics211RecordResource::collection($records),
@@ -219,7 +226,8 @@ class IcsController extends Controller
         ]);
     }
 
-    public function updateStatus($ics211Record, $status){
+    public function updateStatus($ics211Record, $status)
+    {
         $ics211Record = Ics211Record::where('uuid', $ics211Record)->first();
         if (!$ics211Record) {
             return response()->json([
@@ -261,7 +269,8 @@ class IcsController extends Controller
         ]);
     }
 
-    public function updateCheckinDetailStatus($uuid){
+    public function updateCheckinDetailStatus($uuid)
+    {
         $checkInDetail = CheckInDetails::where('uuid', $uuid)->first();
         if (!$checkInDetail) {
             return response()->json([
@@ -280,6 +289,9 @@ class IcsController extends Controller
         if ($checkInDetail->personnel_id) {
             // Update personnel status to match check-in detail status
             Personnel::where('id', $checkInDetail->personnel_id)->update(['status' => $validated['status']]);
+            // Notify personnel via Pusher
+            $personnel = Personnel::find($checkInDetail->personnel_id);
+            $this->pusherService->push("ics-{$personnel->uuid}", 'ics_task_updated',[]);
         }
 
         $checkInDetail->load(['personnel']);

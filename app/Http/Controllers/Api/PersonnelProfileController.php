@@ -31,6 +31,7 @@ class PersonnelProfileController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'contact_number' => 'sometimes|required|string|max:255',
             'department' => 'sometimes|required|string|max:255',
+            'status' => 'sometimes|required',
         ], [
             'name.required' => 'Name is required.',
             'name.max' => 'Name must not exceed 255 characters.',
@@ -38,12 +39,14 @@ class PersonnelProfileController extends Controller
             'contact_number.max' => 'Contact number must not exceed 255 characters.',
             'department.required' => 'Department is required.',
             'department.max' => 'Department must not exceed 255 characters.',
+            'status.required' => 'Status is required.',
         ]);
 
         $personnel->update(array_filter([
             'name' => $validated['name'] ?? null,
             'contact_number' => $validated['contact_number'] ?? null,
             'department' => $validated['department'] ?? null,
+            'status' => $validated['status'] ?? null,
         ]));
 
         return response()->json([
