@@ -134,7 +134,7 @@ class PersonnelController extends Controller
 
         $validated = $request->validate([
             'checkin_details_id' => 'required|exists:check_in_details,id',
-            'status' => 'required|string|in:available,staging,assigned,active,demobilized,out_of_service,standby',
+            'status' => 'required|string|in:available,staging,assigned,active,demobalized,out_of_service,standby',
         ]);
         
         $personnel->status = $validated['status'];

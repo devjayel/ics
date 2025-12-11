@@ -87,7 +87,7 @@ class PersonnelIcsController extends Controller
         }
 
         $validated = request()->validate([
-            'status' => 'required|string|in:available,staging,assigned,active,demobilized,out_of_service,standby',
+            'status' => 'required|string|in:available,staging,assigned,active,demobalized,out_of_service,standby',
         ]);
 
         $checkInDetail->status = $validated['status'];
