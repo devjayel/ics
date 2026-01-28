@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('resident_unit_leaders', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->unique();
+            $table->string('avatar')->nullable();
             $table->string('name');
             $table->string('contact_number');
             $table->string('serial_number')->unique();

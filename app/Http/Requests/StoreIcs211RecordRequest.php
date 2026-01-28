@@ -23,10 +23,18 @@ class StoreIcs211RecordRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'type' => 'nullable|integer|min:1|max:5',
             'start_date' => 'required|date_format:Y-m-d',
             'start_time' => 'required|date_format:H:i',
             'checkin_location' => 'required|string|max:255',
+            'start_coordinates' => 'nullable|string',
+            'end_coordinates' => 'nullable|string',
+            'start_location' => 'nullable|string|max:255',
+            'end_location' => 'nullable|string|max:255',
+            'start_timestamp' => 'nullable|date',
+            'end_timestamp' => 'nullable|date',
             'remarks' => 'nullable|string',
+            'status' => 'nullable|string|in:pending,ongoing,completed',
             
             // Check-in details array validation
             'check_in_details' => 'nullable|array',
@@ -61,6 +69,10 @@ class StoreIcs211RecordRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'type.integer' => 'Type must be a number',
+            'type.min' => 'Type must be between 1 and 5',
+            'type.max' => 'Type must be between 1 and 5',
+            'status.in' => 'Status must be pending, ongoing, or completed',
             'name.required' => 'Operation name is required',
             'start_date.required' => 'Start date is required',
             'start_date.date_format' => 'Start date must be in YYYY-MM-DD format',

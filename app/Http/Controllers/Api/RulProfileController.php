@@ -112,7 +112,39 @@ class RulProfileController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'RUL profile updated successfully',
-            'data' => $profile,
+            'data' => new RulResource($profile->load('certificates')),
+        ]);
+    }
+
+    public function updateAvatar(Request $request){
+        $profile = $request->user();
+
+        $validated = $request->validate([
+            'avatar' => 'required|image|mimes:jpg,jpeg,png|max:5120', // max 5MB
+        ], [
+            'avatar.required' => 'Avatar image is required.',
+            'avatar.image' => 'The file must be an image.',
+            'avatar.mimes' => 'Avatar must be a JPG, JPEG, or PNG file.',
+            'avatar.max' => 'Avatar must not exceed 5MB.',
+        ]);
+
+        // Delete old avatar if exists
+        if ($profile->avatar) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->avatar);
+        }
+
+        // Store new avatar
+        $avatarFile = $request->file('avatar');
+        $fileName = time() . '_' . \Illuminate\Support\Str::uuid() . '.' . $avatarFile->getClientOriginalExtension();
+        $filePath = $avatarFile->storeAs('avatars', $fileName, 'public');
+
+        // Update profile with new avatar path
+        $profile->update(['avatar' => $filePath]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Avatar updated successfully',
+            'data' => new RulResource($profile->load('certificates')),
         ]);
     }
 }

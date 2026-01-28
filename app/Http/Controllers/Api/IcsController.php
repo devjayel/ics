@@ -48,11 +48,20 @@ class IcsController extends Controller
         $ics211Record = Ics211Record::create([
             'uuid' => Str::uuid(),
             'rul_id' => $rul_id,
+            'token' => Str::random(8),
             'name' => $validated['name'],
+            'type' => $validated['type'],
             'start_date' => $validated['start_date'],
             'start_time' => $validated['start_time'],
             'checkin_location' => $validated['checkin_location'],
+            'start_coordinates' => $validated['start_coordinates'] ?? null,
+            'end_coordinates' => $validated['end_coordinates'] ?? null,
+            'start_location' => $validated['start_location'] ?? null,
+            'end_location' => $validated['end_location'] ?? null,
+            'start_timestamp' => $validated['start_timestamp'] ?? null,
+            'end_timestamp' => $validated['end_timestamp'] ?? null,
             'remarks' => $validated['remarks'] ?? null,
+            'status' => $validated['status'] ?? 'pending',
         ]);
 
         // Create Check-in Details if provided
@@ -137,10 +146,18 @@ class IcsController extends Controller
         // Update ICS 211 Record
         $ics211Record->update(array_filter([
             'name' => $validated['name'] ?? $ics211Record->name,
+            'type' => $validated['type'] ?? $ics211Record->type,
             'start_date' => $validated['start_date'] ?? $ics211Record->start_date,
             'start_time' => $validated['start_time'] ?? $ics211Record->start_time,
             'checkin_location' => $validated['checkin_location'] ?? $ics211Record->checkin_location,
+            'start_coordinates' => $validated['start_coordinates'] ?? $ics211Record->start_coordinates,
+            'end_coordinates' => $validated['end_coordinates'] ?? $ics211Record->end_coordinates,
+            'start_location' => $validated['start_location'] ?? $ics211Record->start_location,
+            'end_location' => $validated['end_location'] ?? $ics211Record->end_location,
+            'start_timestamp' => $validated['start_timestamp'] ?? $ics211Record->start_timestamp,
+            'end_timestamp' => $validated['end_timestamp'] ?? $ics211Record->end_timestamp,
             'remarks' => $validated['remarks'] ?? $ics211Record->remarks,
+            'status' => $validated['status'] ?? $ics211Record->status,
         ]));
 
         // Update Check-in Details if provided

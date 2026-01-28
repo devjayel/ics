@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PersonnelResource;
 use App\Models\Personnel;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class PersonnelProfileController extends Controller
         $personnel = request()->user();
         return response()->json([
             'success' => true,
-            'data' => $personnel,
+            'data' => new PersonnelResource($personnel),
         ]);
     }
 
@@ -52,7 +53,40 @@ class PersonnelProfileController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully',
-            'data' => $personnel,
+            'data' => new PersonnelResource($personnel),
+        ]);
+    }
+
+    public function updateAvatar(Request $request)
+    {
+        $personnel = request()->user();
+
+        $validated = $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:5120',
+        ], [
+            'avatar.required' => 'Avatar image is required.',
+            'avatar.image' => 'The file must be an image.',
+            'avatar.mimes' => 'Avatar must be a file of type: jpeg, png, jpg, gif.',
+            'avatar.max' => 'Avatar must not exceed 2MB in size.',
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+
+            // Delete old avatar if exists
+            if ($personnel->avatar) {
+                \Storage::disk('public')->delete($personnel->avatar);
+            }
+
+            // Update personnel avatar path
+            $personnel->avatar = $avatarPath;
+            $personnel->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Avatar updated successfully',
+            'data' => new PersonnelResource($personnel),
         ]);
     }
 }

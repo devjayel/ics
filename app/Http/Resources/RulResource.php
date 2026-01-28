@@ -16,6 +16,7 @@ class RulResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'avatar' => $this->avatar ? asset('storage/' . $this->avatar) : null,
             'uuid' => $this->uuid,
             'name' => $this->name,
             'contact_number' => $this->contact_number,

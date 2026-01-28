@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StorePersonnelRequest;
+use App\Http\Resources\PersonnelResource;
 use App\Models\CheckInDetails;
 use App\Models\Personnel;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class PersonnelController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Personnel::with("rul")->get(),
+            'data' => PersonnelResource::collection(Personnel::with("rul")->get()),
         ]);
     }
 
@@ -57,7 +58,7 @@ class PersonnelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $personnel->with("rul")->first(),
+            'data' => new PersonnelResource($personnel->load("rul")),
         ], 201);
     }
 
@@ -77,7 +78,7 @@ class PersonnelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $personnel,
+            'data' => new PersonnelResource($personnel->load('rul')),
         ]);
     }
 
@@ -116,7 +117,7 @@ class PersonnelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $personnel->with("rul")->first(),
+            'data' => new PersonnelResource($personnel->load("rul")),
             'message' => 'Personnel updated successfully',
         ]);
     }
@@ -142,7 +143,7 @@ class PersonnelController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $personnel->with("rul")->first(),
+            'data' => new PersonnelResource($personnel->load("rul")),
             'message' => 'Personnel status updated successfully',
         ]);
     }

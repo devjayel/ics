@@ -59,6 +59,7 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function 
     //managing own profile
     Route::get('/profile', [RulProfileController::class, 'show']);
     Route::post('/profile/update', [RulProfileController::class, 'update']);
+    Route::post('/profile/change-avatar', [RulProfileController::class, 'updateAvatar']);
 });
 
 //personnel
@@ -77,4 +78,5 @@ Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->gro
     //manage own profile
     Route::get('/profile', [PersonnelProfileController::class, 'show']);
     Route::post('/profile/update', [PersonnelProfileController::class, 'update']);
+    Route::post('/profile/change-avatar', [PersonnelProfileController::class, 'updateAvatar']);
 });

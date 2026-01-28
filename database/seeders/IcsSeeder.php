@@ -7,6 +7,7 @@ use App\Models\Ics211Record;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
+use Nette\Utils\Random;
 
 class IcsSeeder extends Seeder
 {
@@ -70,7 +71,9 @@ class IcsSeeder extends Seeder
             $icsRecord = Ics211Record::create([
                 'uuid' => Str::uuid(),
                 'rul_id' => 1,
+                'token' => Str::random(8),
                 'name' => $operation['name'],
+                'type' => rand(1,5),
                 'start_date' => $startDate,
                 'start_time' => sprintf('%02d:00:00', rand(6, 14)),
                 'checkin_location' => $checkinLocations[array_rand($checkinLocations)],

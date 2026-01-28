@@ -11,6 +11,7 @@ class Rul extends Model
     
     protected $fillable = [
         'uuid',
+        'avatar',
         'name',
         'contact_number',
         'serial_number',

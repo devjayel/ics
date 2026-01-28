@@ -21,7 +21,6 @@ class DashboardController extends Controller
             return [
                 'uuid' => $record->uuid,
                 'name' => $record->name,
-                'order_number' => $record->order_number ?? null,
                 'start_date' => $record->start_date,
                 'start_time' => $record->start_time,
                 'checkin_location' => $record->checkin_location,

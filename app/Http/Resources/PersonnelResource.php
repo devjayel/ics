@@ -16,6 +16,7 @@ class PersonnelResource extends JsonResource
     {
         return [
             'uuid' => $this->uuid,
+            'avatar' => $this->avatar ? asset('storage/' . $this->avatar) : null,
             'name' => $this->name,
             'contact_number' => $this->contact_number,
             'serial_number' => $this->serial_number,

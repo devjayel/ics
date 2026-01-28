@@ -10,6 +10,7 @@ class Personnel extends Model
     use HasApiTokens;
     protected $fillable = [
         'uuid',
+        'avatar',
         'name',
         'rul_id',
         'contact_number',
