@@ -9,30 +9,45 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class Ics211RecordResource extends JsonResource
 {
     /**
+     * @property mixed $resource
      * Transform the resource into an array.
      *
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
+        $isOperator = false;
+        
+        // Check if current user is an operator of this ICS record
+        if ($request->user() && $this->relationLoaded('operators')) {
+            $isOperator = $this->operators
+                ->where('id', $request->user()->id)
+                ->isNotEmpty();
+        }
+
         return [
             'id' => $this->id,
+            'token' => $this->token,
             'uuid' => $this->uuid,
             'name' => $this->name,
             'type' => $this->type,
             'start_date' => $this->start_date ? Carbon::parse($this->start_date)->format('Y-m-d') : null,
             'start_time' => $this->start_time ? Carbon::parse($this->start_time)->format('H:i') : null,
+            'start_timestamp' => $this->resource->start_date && $this->resource->start_time ? Carbon::parse("{$this->resource->start_date} {$this->resource->start_time}")->format('F j, Y g:i A') : null,
+            'end_timestamp' => $this->resource->end_date && $this->resource->end_time ? Carbon::parse("{$this->resource->end_date} {$this->resource->end_time}")->format('F j, Y g:i A') : null,
+            'end_date' => $this->end_date ? Carbon::parse($this->end_date)->format('Y-m-d') : null,
+            'end_time' => $this->end_time ? Carbon::parse($this->end_time)->format('H:i') : null,
             'checkin_location' => $this->checkin_location,
             'start_coordinates' => $this->start_coordinates,
             'end_coordinates' => $this->end_coordinates,
             'start_location' => $this->start_location,
             'end_location' => $this->end_location,
-            'start_timestamp' => $this->start_timestamp,
-            'end_timestamp' => $this->end_timestamp,
+            'region' => $this->region,
             'remarks' => $this->remarks,
+            'remarks_image_attachment' => $this->remarks_image_attachment ? asset('storage/' . $this->remarks_image_attachment) : null, // Convert to full URL if exists
             'status' => $this->status,
-            'rul_id' => $this->rul_id,
-            'rul' => new RulResource($this->whenLoaded('rul')),
+            'is_operator' => $isOperator,
+            'operators' => RulResource::collection($this->whenLoaded('operators')),
             'check_in_details' => CheckInDetailResource::collection($this->whenLoaded('checkInDetails')),
             'total_check_ins' => $this->when(
                 $this->relationLoaded('checkInDetails'),

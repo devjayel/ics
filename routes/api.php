@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PersonnelTaskController;
 use App\Http\Controllers\Api\RulProfileController;
 use App\Http\Controllers\Api\PersonnelController;
 use App\Http\Controllers\Api\CheckInDetailHistoriesController;
+use App\Http\Controllers\Api\IcsLogController;
 
 
 Route::get('/status', function () {
@@ -35,19 +36,32 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function 
 
     //analytics
     Route::get('/analytics', [AnalyticController::class, 'index']);
+    Route::get('/analytics/map', [AnalyticController::class, 'map']);
+    Route::get('/analytics/regions', [AnalyticController::class, 'regions']);
+    Route::get('/analytics/region/{region}', [AnalyticController::class, 'region']);
+    Route::get('/analytics/ics/{uuid}', [AnalyticController::class, 'show']);
 
     //management of ics 211 forms
     Route::get('/ics', [IcsController::class, 'index']);
+    Route::get('/ics/search', [IcsController::class, 'search']);
     Route::post('/ics/create', [IcsController::class, 'store']);
+    Route::post('/ics/join', [IcsController::class, 'joinIcs']);
     Route::get('/ics/{id}/show', [IcsController::class, 'show']);
     Route::post('/ics/{id}/edit', [IcsController::class, 'update']);
     Route::post('/ics/{id}/delete', [IcsController::class, 'destroy']);
     Route::post('/ics/{id}/status/{status}', [IcsController::class, 'updateStatus']);
     Route::post('/ics/checkin/{uuid}/status', [IcsController::class, 'updateCheckinDetailStatus']);
+    Route::get('/ics/{icsUuid}/logs', [IcsLogController::class, 'icsRecordLogs']);
     
     //management of CheckInDetailHistories
     Route::get('/ics/checkin/{id}/history', [CheckInDetailHistoriesController::class, 'show']);
     Route::post('/ics/checkin/history/{id}/status/{status}', [CheckInDetailHistoriesController::class, 'updateStatus']);
+
+    //ICS Logs and Activity
+    Route::get('/logs/my-logs', [IcsLogController::class, 'myLogs']);
+    Route::get('/logs/my-logs/action/{action}', [IcsLogController::class, 'myLogsByAction']);
+    Route::get('/logs/my-activity-summary', [IcsLogController::class, 'myActivitySummary']);
+    Route::post('/logs/my-logs/date-range', [IcsLogController::class, 'myLogsByDateRange']);
 
     //management personnel accounts
     Route::get('/personnel', [PersonnelController::class, 'index']);
@@ -68,6 +82,10 @@ Route::prefix('personnel')->middleware(['personnel.auth', 'throttle:60,1'])->gro
     Route::get('/dashboard', [DashboardController::class, 'index']);
     //analytics
     Route::get('/analytics', [AnalyticController::class, 'index']);
+    Route::get('/analytics/map', [AnalyticController::class, 'map']);
+    Route::get('/analytics/regions', [AnalyticController::class, 'regions']);
+    Route::get('/analytics/region/{region}', [AnalyticController::class, 'region']);
+    Route::get('/analytics/ics/{uuid}', [AnalyticController::class, 'show']);
 
     //Check own ICS 211 records
     Route::get('/ics', [PersonnelIcsController::class, 'index']);

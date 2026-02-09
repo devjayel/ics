@@ -22,7 +22,7 @@ class PersonnelIcsController extends Controller
     {
         $personnel = request()->user();
         $personnelId = $personnel->id;
-        $records = CheckInDetails::with(['ics211Record.rul.certificates', 'personnel'])
+        $records = CheckInDetails::with(['ics211Record.operators.certificates', 'personnel'])
             ->where('personnel_id', $personnelId)
             ->get();
         
@@ -35,7 +35,7 @@ class PersonnelIcsController extends Controller
     public function latest()
     {
 
-        $record = CheckInDetails::with(['ics211Record.rul.certificates', 'personnel'])
+        $record = CheckInDetails::with(['ics211Record.operators.certificates', 'personnel'])
             ->where('personnel_id', request()->user()->id)
             ->whereRelation('ics211Record','status', 'pending')
             ->latest()
@@ -60,7 +60,7 @@ class PersonnelIcsController extends Controller
      */
     public function show($uuid)
     {
-         $records = Ics211Record::with(['rul.certificates', 'checkInDetails.personnel'])
+         $records = Ics211Record::with(['operators.certificates', 'checkInDetails.personnel'])
             ->where('uuid', $uuid)
             ->first();
         if (!$records) {

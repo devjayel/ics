@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RulPersonnelSeeder::class,
             IcsSeeder::class,
+            IcsLogSeeder::class,
         ]);
     }
 }

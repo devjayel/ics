@@ -26,14 +26,16 @@ class StoreIcs211RecordRequest extends FormRequest
             'type' => 'nullable|integer|min:1|max:5',
             'start_date' => 'required|date_format:Y-m-d',
             'start_time' => 'required|date_format:H:i',
+            'end_date' => 'nullable|date_format:Y-m-d',
+            'end_time' => 'nullable|date_format:H:i',
             'checkin_location' => 'required|string|max:255',
             'start_coordinates' => 'nullable|string',
             'end_coordinates' => 'nullable|string',
             'start_location' => 'nullable|string|max:255',
             'end_location' => 'nullable|string|max:255',
-            'start_timestamp' => 'nullable|date',
-            'end_timestamp' => 'nullable|date',
+            'region' => 'nullable|string|max:255',
             'remarks' => 'nullable|string',
+            'remarks_image_attachment' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'status' => 'nullable|string|in:pending,ongoing,completed',
             
             // Check-in details array validation

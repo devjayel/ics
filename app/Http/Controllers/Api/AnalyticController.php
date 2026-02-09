@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Ics211RecordResource;
 use App\Models\Ics211Record;
 use App\Models\Personnel;
 use App\Models\Rul;
@@ -99,6 +100,149 @@ class AnalyticController extends Controller
                 'monthly_data' => $monthlyData,
                 'year' => $currentYear,
             ],
+        ]);
+    }
+
+    public function map()
+    {
+        // Get all unique regions
+        $regions = Ics211Record::select('region')
+            ->distinct()
+            ->whereNotNull('region')
+            ->pluck('region');
+
+        $regionalData = [];
+
+        foreach ($regions as $region) {
+            // Get total records for this region
+            $regionRecords = Ics211Record::where('region', $region);
+            $totalRecords = $regionRecords->count();
+
+            // Get status counts
+            $completedCount = (clone $regionRecords)->where('status', 'completed')->count();
+            $ongoingCount = (clone $regionRecords)->where('status', 'ongoing')->count();
+            $pendingCount = (clone $regionRecords)->where('status', 'pending')->count();
+
+            // Calculate percentages
+            $completedPercent = $totalRecords > 0 ? round(($completedCount / $totalRecords) * 100, 2) : 0;
+            $ongoingPercent = $totalRecords > 0 ? round(($ongoingCount / $totalRecords) * 100, 2) : 0;
+            $pendingPercent = $totalRecords > 0 ? round(($pendingCount / $totalRecords) * 100, 2) : 0;
+
+            // Get recent activity (last 30 days)
+            $recentActivity = Ics211Record::where('region', $region)
+                ->where('created_at', '>=', Carbon::now()->subDays(30))
+                ->count();
+
+            $regionalData[$region] = [
+                'total_records' => $totalRecords,
+                'statistics' => [
+                    'completed' => [
+                        'count' => $completedCount,
+                        'percent' => $completedPercent,
+                    ],
+                    'ongoing' => [
+                        'count' => $ongoingCount,
+                        'percent' => $ongoingPercent,
+                    ],
+                    'pending' => [
+                        'count' => $pendingCount,
+                        'percent' => $pendingPercent,
+                    ],
+                ],
+                'recent_activity_30days' => $recentActivity,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'regions' => $regionalData,
+                'total_regions' => count($regions),
+            ],
+        ]);
+    }
+
+    public function regions()
+    {
+        $regions = Ics211Record::select('region')
+            ->distinct()
+            ->whereNotNull('region')
+            ->where('region', '<>', '')
+            ->orderBy('region')
+            ->pluck('region');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'regions' => $regions,
+                'total_regions' => $regions->count(),
+            ],
+        ]);
+    }
+
+    public function region(Request $request, $region)
+    {
+        // Get all ICS records for the specified region
+        $records = Ics211Record::where('region', $region)
+            ->with(['operators:id,name,contact_number', 'checkInDetails'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Get statistics for this region
+        $totalRecords = $records->count();
+        $completedCount = $records->where('status', 'completed')->count();
+        $ongoingCount = $records->where('status', 'ongoing')->count();
+        $pendingCount = $records->where('status', 'pending')->count();
+
+        // Calculate percentages
+        $completedPercent = $totalRecords > 0 ? round(($completedCount / $totalRecords) * 100, 2) : 0;
+        $ongoingPercent = $totalRecords > 0 ? round(($ongoingCount / $totalRecords) * 100, 2) : 0;
+        $pendingPercent = $totalRecords > 0 ? round(($pendingCount / $totalRecords) * 100, 2) : 0;
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'region' => $region,
+                'statistics' => [
+                    'total_records' => $totalRecords,
+                    'completed' => [
+                        'count' => $completedCount,
+                        'percent' => $completedPercent,
+                    ],
+                    'ongoing' => [
+                        'count' => $ongoingCount,
+                        'percent' => $ongoingPercent,
+                    ],
+                    'pending' => [
+                        'count' => $pendingCount,
+                        'percent' => $pendingPercent,
+                    ],
+                ],
+                'records' => Ics211RecordResource::collection($records),
+            ],
+        ]);
+    }
+
+    public function show($uuid)
+    {
+        // Get specific ICS record by UUID
+        $record = Ics211Record::where('uuid', $uuid)
+            ->with([
+                'operators:id,name,contact_number',
+                'checkInDetails.personnel:id,name,contact_number',
+            ])
+            ->first();
+
+        if (!$record) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ICS record not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => new Ics211RecordResource($record),
         ]);
     }
 }
