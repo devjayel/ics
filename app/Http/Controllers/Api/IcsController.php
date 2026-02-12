@@ -12,6 +12,7 @@ use App\Models\IcsLog;
 use App\Models\Personnel;
 use App\Services\PusherChannelServices;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class IcsController extends Controller
@@ -175,6 +176,7 @@ class IcsController extends Controller
                     'sent_resl' => $checkInDetail['sent_resl'] ?? false,
                 ]);
 
+
                 // Update personnel status to assigned if personnel_id exists
                 if (! empty($checkInDetail['personnel_id'])) {
                     Personnel::where('id', $checkInDetail['personnel_id'])->update(['status' => 'standby']);
@@ -189,6 +191,9 @@ class IcsController extends Controller
                         ['personnel_id' => $checkInDetail['personnel_id'], 'personnel_name' => $personnel->name],
                         $rulId
                     );
+
+                    // Notify personnel via Pusher
+                    //$this->pusherService->push("ics-{$personnel->uuid}", 'ics_task_updated', []);
                 }
             }
         }
@@ -229,12 +234,14 @@ class IcsController extends Controller
     public function update(UpdateIcs211RecordRequest $request, $ics211Record)
     {
         $ics211Record = Ics211Record::where('uuid', $ics211Record)->first();
+        
         if (! $ics211Record) {
             return response()->json([
                 'success' => false,
                 'message' => 'ICS 211 record not found',
             ], 404);
         }
+        
         $validated = $request->validated();
         $rulId = $request->user()->id;
 
@@ -281,11 +288,6 @@ class IcsController extends Controller
                 $newValues,
                 $rulId
             );
-        }
-
-        // Update operators if provided
-        if (isset($validated['operator_ids'])) {
-            $ics211Record->operators()->sync($validated['operator_ids']);
         }
 
         // Update Check-in Details if provided
@@ -390,6 +392,9 @@ class IcsController extends Controller
                                     ['personnel_id' => $newPersonnelId, 'personnel_name' => $newPersonnel->name],
                                     $rulId
                                 );
+
+                                // Notify personnel via Pusher
+                                $this->pusherService->push("ics-{$newPersonnel->uuid}", 'ics_task_updated', []);
                             }
                         }
                     }
@@ -434,6 +439,9 @@ class IcsController extends Controller
                             ['personnel_id' => $checkInDetail['personnel_id'], 'personnel_name' => $personnel->name],
                             $rulId
                         );
+
+                        // Notify personnel via Pusher
+                        //$this->pusherService->push("ics-{$personnel->uuid}", 'ics_task_updated', []);
                     }
                 }
             }
@@ -449,15 +457,19 @@ class IcsController extends Controller
         ]);
     }
 
-    public function updateStatus($ics211Record, $status)
+    public function updateStatus(Request $request,$ics211Record, $status)
     {
         $ics211Record = Ics211Record::where('uuid', $ics211Record)->first();
+
         if (! $ics211Record) {
             return response()->json([
                 'success' => false,
                 'message' => 'ICS 211 record not found',
             ], 404);
         }
+
+        $rulId = $request->user()->id;
+
 
         $validStatuses = ['pending', 'ongoing', 'completed'];
         if (! in_array($status, haystack: $validStatuses)) {
@@ -481,7 +493,8 @@ class IcsController extends Controller
             'status_changed',
             'ICS 211 record status changed to '.$status,
             ['status' => 'previous_status'],
-            ['status' => $status]
+            ['status' => $status],
+            $rulId
         );
 
         // If status is completed, update all associated personnel status to available
