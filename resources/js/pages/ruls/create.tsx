@@ -33,12 +33,29 @@ export default function Create() {
         contact_number: '',
         serial_number: '',
         department: '',
+        logo: null as File | null,
         certificates: [] as File[],
         signature: '',
     });
 
     const signatureRef = useRef<SignatureCanvas>(null);
     const [certificateFiles, setCertificateFiles] = useState<File[]>([]);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        setData('logo', file);
+        if (file) {
+            setLogoPreview(URL.createObjectURL(file));
+        } else {
+            setLogoPreview(null);
+        }
+    };
+
+    const removeLogo = () => {
+        setData('logo', null);
+        setLogoPreview(null);
+    };
 
     const handleCertificateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -166,6 +183,43 @@ export default function Create() {
                                         </p>
                                     )}
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="logo">
+                                    Logo <span className="text-gray-500">(Optional)</span>
+                                </Label>
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="logo"
+                                        type="file"
+                                        accept=".jpg,.jpeg,.png"
+                                        onChange={handleLogoUpload}
+                                        className="cursor-pointer"
+                                    />
+                                    <Upload className="h-5 w-5 text-gray-400" />
+                                </div>
+                                {errors.logo && (
+                                    <p className="text-sm text-red-500">{errors.logo}</p>
+                                )}
+                                {logoPreview && (
+                                    <div className="mt-2 flex items-center gap-4 rounded-md border p-3">
+                                        <img
+                                            src={logoPreview}
+                                            alt="Logo preview"
+                                            className="h-20 w-20 rounded object-contain border"
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={removeLogo}
+                                        >
+                                            <X className="mr-1 h-4 w-4" />
+                                            Remove Logo
+                                        </Button>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-2">

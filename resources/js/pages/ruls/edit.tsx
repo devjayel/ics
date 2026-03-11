@@ -39,6 +39,7 @@ interface Rul {
     contact_number: string;
     serial_number: string;
     department: string;
+    logo?: string;
     signature?: string;
     certificates: Certificate[];
 }
@@ -53,8 +54,10 @@ export default function Edit({ rul }: EditProps) {
         contact_number: rul.contact_number,
         serial_number: rul.serial_number,
         department: rul.department,
+        logo: null as File | null,
         certificates: [] as File[],
         signature: '',
+        remove_logo: false,
         remove_certificates: [] as string[],
         remove_signature: false,
         _method: 'PUT',
@@ -66,8 +69,29 @@ export default function Edit({ rul }: EditProps) {
         rul.certificates
     );
     const [certificatesToRemove, setCertificatesToRemove] = useState<string[]>([]);
+    const [hasLogo, setHasLogo] = useState<boolean>(!!rul.logo);
+    const [logoRemoved, setLogoRemoved] = useState<boolean>(false);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [hasSignature, setHasSignature] = useState<boolean>(!!rul.signature);
     const [signatureRemoved, setSignatureRemoved] = useState<boolean>(false);
+
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] ?? null;
+        setData('logo', file);
+        if (file) {
+            setLogoPreview(URL.createObjectURL(file));
+        } else {
+            setLogoPreview(null);
+        }
+    };
+
+    const removeLogoHandler = () => {
+        setHasLogo(false);
+        setLogoRemoved(true);
+        setLogoPreview(null);
+        setData('remove_logo', true);
+        setData('logo', null);
+    };
 
     const handleCertificateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -208,6 +232,57 @@ export default function Edit({ rul }: EditProps) {
                                         </p>
                                     )}
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>
+                                    Logo <span className="text-gray-500">(Optional)</span>
+                                </Label>
+
+                                {hasLogo && !logoRemoved && (
+                                    <div className="mb-4 space-y-2">
+                                        <p className="text-sm font-medium">Existing Logo</p>
+                                        <div className="flex items-center gap-4 rounded-md border bg-gray-50 p-3">
+                                            <img
+                                                src={`/storage/${rul.logo}`}
+                                                alt="Logo"
+                                                className="h-20 w-20 rounded object-contain border"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={removeLogoHandler}
+                                            >
+                                                Remove Logo
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="logo"
+                                        type="file"
+                                        accept=".jpg,.jpeg,.png"
+                                        onChange={handleLogoUpload}
+                                        className="cursor-pointer"
+                                    />
+                                    <Upload className="h-5 w-5 text-gray-400" />
+                                </div>
+                                {errors.logo && (
+                                    <p className="text-sm text-red-500">{errors.logo}</p>
+                                )}
+                                {logoPreview && (
+                                    <div className="mt-2 flex items-center gap-4 rounded-md border p-3">
+                                        <img
+                                            src={logoPreview}
+                                            alt="New logo preview"
+                                            className="h-20 w-20 rounded object-contain border"
+                                        />
+                                        <p className="text-sm text-gray-500">New logo selected</p>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-2">
