@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -29,19 +28,10 @@ class Ics211RecordResource extends JsonResource
             'id' => $this->id,
             'token' => $this->token,
             'uuid' => $this->uuid,
+            'order_request_number' => $this->order_request_number,
             'name' => $this->name,
             'type' => $this->type,
-            'start_date' => $this->start_date ? Carbon::parse($this->start_date)->format('Y-m-d') : null,
-            'start_time' => $this->start_time ? Carbon::parse($this->start_time)->format('H:i') : null,
-            'start_timestamp' => $this->resource->start_date && $this->resource->start_time ? Carbon::parse("{$this->resource->start_date} {$this->resource->start_time}")->format('F j, Y g:i A') : null,
-            'end_timestamp' => $this->resource->end_date && $this->resource->end_time ? Carbon::parse("{$this->resource->end_date} {$this->resource->end_time}")->format('F j, Y g:i A') : null,
-            'end_date' => $this->end_date ? Carbon::parse($this->end_date)->format('Y-m-d') : null,
-            'end_time' => $this->end_time ? Carbon::parse($this->end_time)->format('H:i') : null,
             'checkin_location' => $this->checkin_location,
-            'start_coordinates' => $this->start_coordinates,
-            'end_coordinates' => $this->end_coordinates,
-            'start_location' => $this->start_location,
-            'end_location' => $this->end_location,
             'region' => $this->region,
             'remarks' => $this->remarks,
             'remarks_image_attachment' => $this->remarks_image_attachment ? asset('storage/' . $this->remarks_image_attachment) : null, // Convert to full URL if exists

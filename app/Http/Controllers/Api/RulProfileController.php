@@ -32,6 +32,8 @@ class RulProfileController extends Controller
             'name' => 'sometimes|required|string|max:255',
             'contact_number' => 'sometimes|required|string|max:255',
             'department' => 'sometimes|required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'remove_logo' => 'nullable|boolean',
             'certificates' => 'nullable|array',
             'certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
             'signature' => 'nullable|string',
@@ -45,6 +47,9 @@ class RulProfileController extends Controller
             'contact_number.max' => 'Contact number must not exceed 255 characters.',
             'department.required' => 'Department is required.',
             'department.max' => 'Department must not exceed 255 characters.',
+            'logo.image' => 'The file must be an image.',
+            'logo.mimes' => 'Logo must be a JPG, JPEG, or PNG file.',
+            'logo.max' => 'Logo must not exceed 5MB.',
             'certificates.*.file' => 'Each certificate must be a valid file.',
             'certificates.*.mimes' => 'Certificates must be PDF, JPG, JPEG, or PNG files.',
             'certificates.*.max' => 'Each certificate must not exceed 10MB.',
@@ -57,6 +62,22 @@ class RulProfileController extends Controller
             'contact_number' => $validated['contact_number'] ?? null,
             'department' => $validated['department'] ?? null,
         ]));
+
+        // Handle logo update
+        if ($request->boolean('remove_logo')) {
+            if ($profile->logo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->logo);
+                $profile->update(['logo' => null]);
+            }
+        } elseif ($request->hasFile('logo')) {
+            if ($profile->logo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->logo);
+            }
+            $logoFile = $request->file('logo');
+            $fileName = time() . '_' . \Illuminate\Support\Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
+            $filePath = $logoFile->storeAs('logos', $fileName, 'public');
+            $profile->update(['logo' => $filePath]);
+        }
 
         // Handle signature update
         if ($request->boolean('remove_signature')) {

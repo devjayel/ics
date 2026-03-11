@@ -32,6 +32,7 @@ class ResourceUnitLeadersController extends Controller
             'contact_number' => 'required|string|max:255',
             'serial_number' => 'required|string|max:255|unique:resident_unit_leaders,serial_number',
             'department' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
             'certificates' => 'nullable|array',
             'certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
             'signature' => 'nullable|string',
@@ -45,6 +46,14 @@ class ResourceUnitLeadersController extends Controller
             'department' => $validated['department'],
             'token' => Str::random(60),
         ]);
+
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $logoFile = $request->file('logo');
+            $fileName = time() . '_' . Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
+            $filePath = $logoFile->storeAs('logos', $fileName, 'public');
+            $rul->update(['logo' => $filePath]);
+        }
 
         // Handle signature upload
         if ($request->filled('signature')) {
@@ -102,6 +111,8 @@ class ResourceUnitLeadersController extends Controller
             'contact_number' => 'required|string|max:255',
             'serial_number' => 'required|string|max:255|unique:resident_unit_leaders,serial_number,' . $rul->id,
             'department' => 'required|string|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
+            'remove_logo' => 'nullable|boolean',
             'certificates' => 'nullable|array',
             'certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
             'signature' => 'nullable|string',
@@ -116,6 +127,22 @@ class ResourceUnitLeadersController extends Controller
             'serial_number' => $validated['serial_number'],
             'department' => $validated['department'],
         ]);
+
+        // Handle logo update
+        if ($request->boolean('remove_logo')) {
+            if ($rul->logo) {
+                Storage::disk('public')->delete($rul->logo);
+                $rul->update(['logo' => null]);
+            }
+        } elseif ($request->hasFile('logo')) {
+            if ($rul->logo) {
+                Storage::disk('public')->delete($rul->logo);
+            }
+            $logoFile = $request->file('logo');
+            $fileName = time() . '_' . Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
+            $filePath = $logoFile->storeAs('logos', $fileName, 'public');
+            $rul->update(['logo' => $filePath]);
+        }
 
         // Handle signature update
         if ($request->boolean('remove_signature')) {

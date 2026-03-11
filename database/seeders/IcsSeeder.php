@@ -65,52 +65,18 @@ class IcsSeeder extends Seeder
         $departureMethods = ['Bus', 'Truck', 'Engine', 'Personal vehicle', 'Helicopter', 'ATV', 'Motorcycle', 'Van'];
         $regions = ['Metro Manila', 'Calabarzon', 'Davao del Sur', 'Central Visayas', 'Ilocos Region', 'Central Luzon', 'Western Visayas', 'Northern Mindanao'];
 
-        // Define locations with coordinates
-        $locations = [
-            ['name' => 'Metro Manila Command Center', 'coordinates' => '14.5995,120.9842'],
-            ['name' => 'Quezon City Operations Base', 'coordinates' => '14.6760,121.0437'],
-            ['name' => 'Makati Emergency Hub', 'coordinates' => '14.5547,121.0244'],
-            ['name' => 'Taguig Incident Command', 'coordinates' => '14.5176,121.0509'],
-            ['name' => 'Pasig Response Center', 'coordinates' => '14.5764,121.0851'],
-            ['name' => 'Caloocan Operations Post', 'coordinates' => '14.6549,120.9820'],
-            ['name' => 'Mandaluyong Field Office', 'coordinates' => '14.5794,121.0359'],
-            ['name' => 'Manila Central Station', 'coordinates' => '14.5906,120.9823'],
-            ['name' => 'Paranaque Coastal Base', 'coordinates' => '14.4793,121.0198'],
-            ['name' => 'Las Pinas Emergency Center', 'coordinates' => '14.4453,120.9830'],
-            ['name' => 'Muntinlupa Command Post', 'coordinates' => '14.4080,121.0414'],
-            ['name' => 'San Juan Operations Hub', 'coordinates' => '14.6019,121.0355'],
-            ['name' => 'Marikina Valley Station', 'coordinates' => '14.6507,121.1029'],
-            ['name' => 'Valenzuela Industrial Zone', 'coordinates' => '14.6937,120.9830'],
-            ['name' => 'Navotas Port Authority', 'coordinates' => '14.6650,120.9404'],
-            ['name' => 'Malabon Relief Center', 'coordinates' => '14.6699,120.9569'],
-            ['name' => 'Pateros Command Station', 'coordinates' => '14.5428,121.0686'],
-            ['name' => 'BGC Emergency Operations', 'coordinates' => '14.5507,121.0494'],
-        ];
-
         foreach ($operations as $index => $operation) {
             $month = $operation['month'];
             $startDate = "2025-{$month}-" . rand(1, 28);
-            $endDate = "2025-{$month}-" . rand(1, 28);
-
-            // Randomly select start and end locations
-            $startLocation = $locations[array_rand($locations)];
-            $endLocation = $locations[array_rand($locations)];
 
             // Create ICS 211 Record
             $icsRecord = Ics211Record::create([
                 'uuid' => Str::uuid(),
                 'token' => Str::random(8),
+                'order_request_number' => 'ORD-2025-' . str_pad($index + 1, 3, '0', STR_PAD_LEFT),
                 'name' => $operation['name'],
                 'type' => rand(1,5),
-                'start_date' => $startDate,
-                'start_time' => sprintf('%02d:00:00', rand(6, 14)),
-                'end_date' => $endDate,
-                'end_time' => sprintf('%02d:00:00', rand(15, 20)),
                 'checkin_location' => $checkinLocations[array_rand($checkinLocations)],
-                'start_coordinates' => $startLocation['coordinates'],
-                'end_coordinates' => $endLocation['coordinates'],
-                'start_location' => $startLocation['name'],
-                'end_location' => $endLocation['name'],
                 'region' => $regions[array_rand($regions)],
                 'remarks' => 'Priority response operation for ' . strtolower($operation['name']),
                 'status' => $statuses[array_rand($statuses)],
