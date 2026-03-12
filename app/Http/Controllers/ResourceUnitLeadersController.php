@@ -50,9 +50,9 @@ class ResourceUnitLeadersController extends Controller
         // Handle logo upload
         if ($request->hasFile('logo')) {
             $logoFile = $request->file('logo');
-            $fileName = time() . '_' . Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
-            $filePath = $logoFile->storeAs('logos', $fileName, 'public');
-            $rul->update(['logo' => $filePath]);
+            $logoPath = 'avatars/' . $rul->uuid . '.' . $logoFile->getClientOriginalExtension();
+            $logoFile->storeAs('avatars', $rul->uuid . '.' . $logoFile->getClientOriginalExtension(), 'public');
+            $rul->update(['avatar' => $logoPath]);
         }
 
         // Handle signature upload
@@ -130,18 +130,18 @@ class ResourceUnitLeadersController extends Controller
 
         // Handle logo update
         if ($request->boolean('remove_logo')) {
-            if ($rul->logo) {
-                Storage::disk('public')->delete($rul->logo);
-                $rul->update(['logo' => null]);
+            if ($rul->avatar) {
+                Storage::disk('public')->delete($rul->avatar);
+                $rul->update(['avatar' => null]);
             }
         } elseif ($request->hasFile('logo')) {
-            if ($rul->logo) {
-                Storage::disk('public')->delete($rul->logo);
+            if ($rul->avatar) {
+                Storage::disk('public')->delete($rul->avatar);
             }
             $logoFile = $request->file('logo');
-            $fileName = time() . '_' . Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
-            $filePath = $logoFile->storeAs('logos', $fileName, 'public');
-            $rul->update(['logo' => $filePath]);
+            $logoPath = 'avatars/' . $rul->uuid . '.' . $logoFile->getClientOriginalExtension();
+            $logoFile->storeAs('avatars', $rul->uuid . '.' . $logoFile->getClientOriginalExtension(), 'public');
+            $rul->update(['avatar' => $logoPath]);
         }
 
         // Handle signature update
@@ -197,6 +197,11 @@ class ResourceUnitLeadersController extends Controller
 
     public function destroy(Rul $rul)
     {
+        // Delete avatar if exists
+        if ($rul->avatar) {
+            Storage::disk('public')->delete($rul->avatar);
+        }
+
         // Delete signature if exists
         if ($rul->signature) {
             Storage::disk('public')->delete($rul->signature);

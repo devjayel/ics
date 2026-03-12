@@ -39,7 +39,7 @@ interface Rul {
     contact_number: string;
     serial_number: string;
     department: string;
-    logo?: string;
+    avatar?: string;
     signature?: string;
     certificates: Certificate[];
 }
@@ -69,7 +69,6 @@ export default function Edit({ rul }: EditProps) {
         rul.certificates
     );
     const [certificatesToRemove, setCertificatesToRemove] = useState<string[]>([]);
-    const [hasLogo, setHasLogo] = useState<boolean>(!!rul.logo);
     const [logoRemoved, setLogoRemoved] = useState<boolean>(false);
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [hasSignature, setHasSignature] = useState<boolean>(!!rul.signature);
@@ -86,7 +85,6 @@ export default function Edit({ rul }: EditProps) {
     };
 
     const removeLogoHandler = () => {
-        setHasLogo(false);
         setLogoRemoved(true);
         setLogoPreview(null);
         setData('remove_logo', true);
@@ -239,26 +237,6 @@ export default function Edit({ rul }: EditProps) {
                                     Logo <span className="text-gray-500">(Optional)</span>
                                 </Label>
 
-                                {hasLogo && !logoRemoved && (
-                                    <div className="mb-4 space-y-2">
-                                        <p className="text-sm font-medium">Existing Logo</p>
-                                        <div className="flex items-center gap-4 rounded-md border bg-gray-50 p-3">
-                                            <img
-                                                src={`/storage/${rul.logo}`}
-                                                alt="Logo"
-                                                className="h-20 w-20 rounded object-contain border"
-                                            />
-                                            <Button
-                                                type="button"
-                                                variant="destructive"
-                                                size="sm"
-                                                onClick={removeLogoHandler}
-                                            >
-                                                Remove Logo
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )}
 
                                 <div className="flex items-center gap-2">
                                     <Input

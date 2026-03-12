@@ -61,7 +61,7 @@ interface Rul {
     contact_number: string;
     serial_number: string;
     department: string;
-    logo?: string;
+    avatar?: string;
     signature?: string;
     certificates: Certificate[];
     created_at: string;

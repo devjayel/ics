@@ -12,7 +12,6 @@ class Rul extends Model
     protected $fillable = [
         'uuid',
         'avatar',
-        'logo',
         'name',
         'contact_number',
         'serial_number',
@@ -25,9 +24,9 @@ class Rul extends Model
     protected static function booted()
     {
         static::deleting(function ($rul) {
-            // Delete logo file if exists
-            if ($rul->logo) {
-                Storage::disk('public')->delete($rul->logo);
+            // Delete avatar file if exists
+            if ($rul->avatar) {
+                Storage::disk('public')->delete($rul->avatar);
             }
 
             // Delete signature file if exists
