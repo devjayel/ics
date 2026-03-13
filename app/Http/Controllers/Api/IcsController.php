@@ -67,24 +67,9 @@ class IcsController extends Controller
             $query->where('name', 'like', '%'.$request->name.'%');
         }
 
-        // Filter by start_date
-        if ($request->has('start_date') && ! empty($request->start_date)) {
-            $query->whereDate('start_date', '>=', $request->start_date);
-        }
-
-        // Filter by end_date
-        if ($request->has('end_date') && ! empty($request->end_date)) {
-            $query->whereDate('end_date', '<=', $request->end_date);
-        }
-
-        // Filter by start_location (partial match)
-        if ($request->has('start_location') && ! empty($request->start_location)) {
-            $query->where('start_location', 'like', '%'.$request->start_location.'%');
-        }
-
-        // Filter by end_location (partial match)
-        if ($request->has('end_location') && ! empty($request->end_location)) {
-            $query->where('end_location', 'like', '%'.$request->end_location.'%');
+        // Filter by order_request_number (partial match)
+        if ($request->has('order_request_number') && ! empty($request->order_request_number)) {
+            $query->where('order_request_number', 'like', '%'.$request->order_request_number.'%');
         }
 
         $records = $query->get();
@@ -118,15 +103,8 @@ class IcsController extends Controller
             'token' => Str::random(8),
             'name' => $validated['name'],
             'type' => $validated['type'],
-            'start_date' => $validated['start_date'],
-            'start_time' => $validated['start_time'],
-            'end_date' => $validated['end_date'] ?? null,
-            'end_time' => $validated['end_time'] ?? null,
+            'order_request_number' => $validated['order_request_number'],
             'checkin_location' => $validated['checkin_location'],
-            'start_coordinates' => $validated['start_coordinates'] ?? null,
-            'end_coordinates' => $validated['end_coordinates'] ?? null,
-            'start_location' => $validated['start_location'] ?? null,
-            'end_location' => $validated['end_location'] ?? null,
             'region' => $validated['region'] ?? null,
             'remarks' => $validated['remarks'] ?? null,
             'remarks_image_attachment' => $remarksImagePath,
@@ -261,15 +239,8 @@ class IcsController extends Controller
         $ics211Record->update(array_filter([
             'name' => $validated['name'] ?? $ics211Record->name,
             'type' => $validated['type'] ?? $ics211Record->type,
-            'start_date' => $validated['start_date'] ?? $ics211Record->start_date,
-            'start_time' => $validated['start_time'] ?? $ics211Record->start_time,
-            'end_date' => $validated['end_date'] ?? $ics211Record->end_date,
-            'end_time' => $validated['end_time'] ?? $ics211Record->end_time,
+            'order_request_number' => $validated['order_request_number'] ?? $ics211Record->order_request_number,
             'checkin_location' => $validated['checkin_location'] ?? $ics211Record->checkin_location,
-            'start_coordinates' => $validated['start_coordinates'] ?? $ics211Record->start_coordinates,
-            'end_coordinates' => $validated['end_coordinates'] ?? $ics211Record->end_coordinates,
-            'start_location' => $validated['start_location'] ?? $ics211Record->start_location,
-            'end_location' => $validated['end_location'] ?? $ics211Record->end_location,
             'region' => $validated['region'] ?? $ics211Record->region,
             'remarks' => $validated['remarks'] ?? $ics211Record->remarks,
             'remarks_image_attachment' => $remarksImagePath,

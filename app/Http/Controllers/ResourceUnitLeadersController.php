@@ -35,6 +35,7 @@ class ResourceUnitLeadersController extends Controller
             'certificates' => 'nullable|array',
             'certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
             'signature' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
         ]);
 
         $rul = Rul::create([
@@ -46,16 +47,25 @@ class ResourceUnitLeadersController extends Controller
             'token' => Str::random(60),
         ]);
 
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $logoFile = $request->file('logo');
+            $fileName = time() . '_' . Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
+            $logoPath = $logoFile->storeAs('logos', $fileName, 'public');
+
+            $rul->update(['logo' => $logoPath]);
+        }
+
         // Handle signature upload
         if ($request->filled('signature')) {
             $signatureData = $request->input('signature');
             // Remove data:image/png;base64, prefix if present
             $signatureData = preg_replace('/^data:image\/\w+;base64,/', '', $signatureData);
             $signatureData = base64_decode($signatureData);
-            
+
             $signaturePath = 'signatures/' . $rul->uuid . '.png';
             Storage::disk('public')->put($signaturePath, $signatureData);
-            
+
             $rul->update(['signature' => $signaturePath]);
         }
 
@@ -64,7 +74,7 @@ class ResourceUnitLeadersController extends Controller
             foreach ($request->file('certificates') as $certificate) {
                 $fileName = time() . '_' . Str::uuid() . '.' . $certificate->getClientOriginalExtension();
                 $filePath = $certificate->storeAs('certificates', $fileName, 'public');
-                
+
                 Certificate::create([
                     'uuid' => Str::uuid(),
                     'rul_id' => $rul->id,
@@ -105,9 +115,11 @@ class ResourceUnitLeadersController extends Controller
             'certificates' => 'nullable|array',
             'certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
             'signature' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
             'remove_certificates' => 'nullable|array',
             'remove_certificates.*' => 'exists:certificates,uuid',
             'remove_signature' => 'nullable|boolean',
+            'remove_logo' => 'nullable|boolean',
         ]);
 
         $rul->update([
@@ -116,6 +128,25 @@ class ResourceUnitLeadersController extends Controller
             'serial_number' => $validated['serial_number'],
             'department' => $validated['department'],
         ]);
+
+        // Handle logo update
+        if ($request->boolean('remove_logo')) {
+            if ($rul->logo) {
+                Storage::disk('public')->delete($rul->logo);
+                $rul->update(['logo' => null]);
+            }
+        } elseif ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($rul->logo) {
+                Storage::disk('public')->delete($rul->logo);
+            }
+
+            $logoFile = $request->file('logo');
+            $fileName = time() . '_' . Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
+            $logoPath = $logoFile->storeAs('logos', $fileName, 'public');
+
+            $rul->update(['logo' => $logoPath]);
+        }
 
         // Handle signature update
         if ($request->boolean('remove_signature')) {
@@ -128,14 +159,14 @@ class ResourceUnitLeadersController extends Controller
             if ($rul->signature) {
                 Storage::disk('public')->delete($rul->signature);
             }
-            
+
             $signatureData = $request->input('signature');
             $signatureData = preg_replace('/^data:image\/\w+;base64,/', '', $signatureData);
             $signatureData = base64_decode($signatureData);
-            
+
             $signaturePath = 'signatures/' . $rul->uuid . '.png';
             Storage::disk('public')->put($signaturePath, $signatureData);
-            
+
             $rul->update(['signature' => $signaturePath]);
         }
 
@@ -155,7 +186,7 @@ class ResourceUnitLeadersController extends Controller
             foreach ($request->file('certificates') as $certificate) {
                 $fileName = time() . '_' . Str::uuid() . '.' . $certificate->getClientOriginalExtension();
                 $filePath = $certificate->storeAs('certificates', $fileName, 'public');
-                
+
                 Certificate::create([
                     'uuid' => Str::uuid(),
                     'rul_id' => $rul->id,
@@ -170,6 +201,11 @@ class ResourceUnitLeadersController extends Controller
 
     public function destroy(Rul $rul)
     {
+        // Delete logo if exists
+        if ($rul->logo) {
+            Storage::disk('public')->delete($rul->logo);
+        }
+
         // Delete signature if exists
         if ($rul->signature) {
             Storage::disk('public')->delete($rul->signature);

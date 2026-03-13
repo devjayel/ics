@@ -62,6 +62,7 @@ interface Rul {
     serial_number: string;
     department: string;
     signature?: string;
+    logo?: string;
     certificates: Certificate[];
     created_at: string;
 }
@@ -132,6 +133,7 @@ export default function Index({ ruls }: IndexProps) {
                                         <TableHead>Serial Number</TableHead>
                                         <TableHead>Department</TableHead>
                                         <TableHead>Contact Number</TableHead>
+                                        <TableHead>Logo</TableHead>
                                         <TableHead>Certificates</TableHead>
                                         <TableHead>Signature</TableHead>
                                         <TableHead className="text-right">Actions</TableHead>
@@ -141,7 +143,7 @@ export default function Index({ ruls }: IndexProps) {
                                     {ruls.data.length === 0 ? (
                                         <TableRow>
                                             <TableCell
-                                                colSpan={7}
+                                                colSpan={8}
                                                 className="h-24 text-center"
                                             >
                                                 No resource unit leaders found.
@@ -156,6 +158,17 @@ export default function Index({ ruls }: IndexProps) {
                                                 <TableCell>{rul.serial_number}</TableCell>
                                                 <TableCell>{rul.department}</TableCell>
                                                 <TableCell>{rul.contact_number}</TableCell>
+                                                <TableCell>
+                                                    {rul.logo ? (
+                                                        <img
+                                                            src={`/storage/${rul.logo}`}
+                                                            alt="Logo"
+                                                            className="h-8 w-8 object-cover rounded-md border"
+                                                        />
+                                                    ) : (
+                                                        <span className="text-gray-400">No logo</span>
+                                                    )}
+                                                </TableCell>
                                                 <TableCell>
                                                     {rul.certificates.length} certificate(s)
                                                 </TableCell>
@@ -279,6 +292,24 @@ export default function Index({ ruls }: IndexProps) {
                                         <p className="mt-1 text-base">
                                             {selectedRul.department}
                                         </p>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-gray-500">
+                                            Logo
+                                        </label>
+                                        {selectedRul.logo ? (
+                                            <div className="mt-2 border rounded-md p-4 bg-white">
+                                                <img
+                                                    src={`/storage/${selectedRul.logo}`}
+                                                    alt="Logo"
+                                                    className="max-h-32 mx-auto object-contain"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <p className="mt-1 text-sm text-gray-400">
+                                                No logo available
+                                            </p>
+                                        )}
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium text-gray-500">

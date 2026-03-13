@@ -40,6 +40,7 @@ interface Rul {
     serial_number: string;
     department: string;
     signature?: string;
+    logo?: string;
     certificates: Certificate[];
 }
 
@@ -55,8 +56,10 @@ export default function Edit({ rul }: EditProps) {
         department: rul.department,
         certificates: [] as File[],
         signature: '',
+        logo: null as File | null,
         remove_certificates: [] as string[],
         remove_signature: false,
+        remove_logo: false,
         _method: 'PUT',
     });
 
@@ -68,6 +71,10 @@ export default function Edit({ rul }: EditProps) {
     const [certificatesToRemove, setCertificatesToRemove] = useState<string[]>([]);
     const [hasSignature, setHasSignature] = useState<boolean>(!!rul.signature);
     const [signatureRemoved, setSignatureRemoved] = useState<boolean>(false);
+    const [hasLogo, setHasLogo] = useState<boolean>(!!rul.logo);
+    const [logoRemoved, setLogoRemoved] = useState<boolean>(false);
+    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
     const handleCertificateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -100,6 +107,42 @@ export default function Edit({ rul }: EditProps) {
         setHasSignature(false);
         setSignatureRemoved(true);
         setData('remove_signature', true);
+    };
+
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setLogoFile(file);
+            setData('logo', file);
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setLogoPreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeLogo = () => {
+        setHasLogo(false);
+        setLogoRemoved(true);
+        setLogoFile(null);
+        setLogoPreview(null);
+        setData('logo', null);
+        setData('remove_logo', true);
+        // Reset file input
+        const fileInput = document.getElementById('logo') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+    };
+
+    const removeNewLogo = () => {
+        setLogoFile(null);
+        setLogoPreview(null);
+        setData('logo', null);
+        // Reset file input
+        const fileInput = document.getElementById('logo') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
     };
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -208,6 +251,78 @@ export default function Edit({ rul }: EditProps) {
                                         </p>
                                     )}
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label>
+                                    Logo <span className="text-gray-500">(Optional)</span>
+                                </Label>
+
+                                {hasLogo && !logoRemoved && (
+                                    <div className="mb-4 space-y-2">
+                                        <p className="text-sm font-medium">Existing Logo</p>
+                                        <div className="flex items-center gap-4 rounded-md border p-4">
+                                            <img
+                                                src={`/storage/${rul.logo}`}
+                                                alt="Current Logo"
+                                                className="h-16 w-16 object-cover rounded-md border"
+                                            />
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium">Current Logo</p>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="sm"
+                                                onClick={removeLogo}
+                                            >
+                                                Remove Logo
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="logo"
+                                        type="file"
+                                        accept="image/jpeg,image/jpg,image/png"
+                                        onChange={handleLogoUpload}
+                                        className="cursor-pointer"
+                                    />
+                                    <Upload className="h-5 w-5 text-gray-400" />
+                                </div>
+                                {errors.logo && (
+                                    <p className="text-sm text-red-500">{errors.logo}</p>
+                                )}
+                                {logoPreview && (
+                                    <div className="mt-2">
+                                        <p className="text-sm font-medium">New Logo</p>
+                                        <div className="flex items-center justify-between rounded-md border p-4">
+                                            <div className="flex items-center gap-4">
+                                                <img
+                                                    src={logoPreview}
+                                                    alt="Logo preview"
+                                                    className="h-16 w-16 object-cover rounded-md border"
+                                                />
+                                                <div>
+                                                    <p className="text-sm font-medium">Logo Preview</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {logoFile?.name}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={removeNewLogo}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-2">

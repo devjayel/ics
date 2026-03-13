@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
             $table->string('avatar')->nullable();
+            $table->string('logo')->nullable();
             $table->string('name');
             $table->string('contact_number');
             $table->string('serial_number')->unique();

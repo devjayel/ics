@@ -35,9 +35,11 @@ class RulProfileController extends Controller
             'certificates' => 'nullable|array',
             'certificates.*' => 'file|mimes:pdf,jpg,jpeg,png|max:10240',
             'signature' => 'nullable|string',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
             'remove_certificates' => 'nullable|array',
             'remove_certificates.*' => 'exists:certificates,uuid',
             'remove_signature' => 'nullable|boolean',
+            'remove_logo' => 'nullable|boolean',
         ], [
             'name.required' => 'Name is required.',
             'name.max' => 'Name must not exceed 255 characters.',
@@ -48,6 +50,9 @@ class RulProfileController extends Controller
             'certificates.*.file' => 'Each certificate must be a valid file.',
             'certificates.*.mimes' => 'Certificates must be PDF, JPG, JPEG, or PNG files.',
             'certificates.*.max' => 'Each certificate must not exceed 10MB.',
+            'logo.image' => 'Logo must be an image file.',
+            'logo.mimes' => 'Logo must be a JPG, JPEG, or PNG file.',
+            'logo.max' => 'Logo must not exceed 5MB.',
             'remove_certificates.*.exists' => 'Certificate not found.',
         ]);
 
@@ -57,6 +62,25 @@ class RulProfileController extends Controller
             'contact_number' => $validated['contact_number'] ?? null,
             'department' => $validated['department'] ?? null,
         ]));
+
+        // Handle logo update
+        if ($request->boolean('remove_logo')) {
+            if ($profile->logo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->logo);
+                $profile->update(['logo' => null]);
+            }
+        } elseif ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($profile->logo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->logo);
+            }
+
+            $logoFile = $request->file('logo');
+            $fileName = time() . '_' . \Illuminate\Support\Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
+            $logoPath = $logoFile->storeAs('logos', $fileName, 'public');
+
+            $profile->update(['logo' => $logoPath]);
+        }
 
         // Handle signature update
         if ($request->boolean('remove_signature')) {
@@ -144,6 +168,38 @@ class RulProfileController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Avatar updated successfully',
+            'data' => new RulResource($profile->load('certificates')),
+        ]);
+    }
+
+    public function updateLogo(Request $request){
+        $profile = $request->user();
+
+        $validated = $request->validate([
+            'logo' => 'required|image|mimes:jpg,jpeg,png|max:5120', // max 5MB
+        ], [
+            'logo.required' => 'Logo image is required.',
+            'logo.image' => 'The file must be an image.',
+            'logo.mimes' => 'Logo must be a JPG, JPEG, or PNG file.',
+            'logo.max' => 'Logo must not exceed 5MB.',
+        ]);
+
+        // Delete old logo if exists
+        if ($profile->logo) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($profile->logo);
+        }
+
+        // Store new logo
+        $logoFile = $request->file('logo');
+        $fileName = time() . '_' . \Illuminate\Support\Str::uuid() . '.' . $logoFile->getClientOriginalExtension();
+        $filePath = $logoFile->storeAs('logos', $fileName, 'public');
+
+        // Update profile with new logo path
+        $profile->update(['logo' => $filePath]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logo updated successfully',
             'data' => new RulResource($profile->load('certificates')),
         ]);
     }

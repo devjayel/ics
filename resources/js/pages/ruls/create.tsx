@@ -35,10 +35,13 @@ export default function Create() {
         department: '',
         certificates: [] as File[],
         signature: '',
+        logo: null as File | null,
     });
 
     const signatureRef = useRef<SignatureCanvas>(null);
     const [certificateFiles, setCertificateFiles] = useState<File[]>([]);
+    const [logoFile, setLogoFile] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
     const handleCertificateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -53,6 +56,30 @@ export default function Create() {
         const updatedFiles = certificateFiles.filter((_, i) => i !== index);
         setCertificateFiles(updatedFiles);
         setData('certificates', updatedFiles);
+    };
+
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            setLogoFile(file);
+            setData('logo', file);
+
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                setLogoPreview(e.target?.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const removeLogo = () => {
+        setLogoFile(null);
+        setLogoPreview(null);
+        setData('logo', null);
+        // Reset file input
+        const fileInput = document.getElementById('logo') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
     };
 
     const clearSignature = () => {
@@ -166,6 +193,52 @@ export default function Create() {
                                         </p>
                                     )}
                                 </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="logo">
+                                    Logo <span className="text-gray-500">(Optional)</span>
+                                </Label>
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        id="logo"
+                                        type="file"
+                                        accept="image/jpeg,image/jpg,image/png"
+                                        onChange={handleLogoUpload}
+                                        className="cursor-pointer"
+                                    />
+                                    <Upload className="h-5 w-5 text-gray-400" />
+                                </div>
+                                {errors.logo && (
+                                    <p className="text-sm text-red-500">{errors.logo}</p>
+                                )}
+                                {logoPreview && (
+                                    <div className="mt-2">
+                                        <div className="flex items-center justify-between rounded-md border p-4">
+                                            <div className="flex items-center gap-4">
+                                                <img
+                                                    src={logoPreview}
+                                                    alt="Logo preview"
+                                                    className="h-16 w-16 object-cover rounded-md border"
+                                                />
+                                                <div>
+                                                    <p className="text-sm font-medium">Logo Preview</p>
+                                                    <p className="text-xs text-gray-500">
+                                                        {logoFile?.name}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={removeLogo}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="space-y-2">
