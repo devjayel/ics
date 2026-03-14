@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('type');
             $table->string('order_request_number');
             $table->string('checkin_location');
-            $table->string('region')->nullable();
+            $table->date('start_date');
+            $table->time('start_time');
             $table->text('remarks')->nullable();
             $table->string('remarks_image_attachment')->nullable();
             $table->string('status')->default('pending'); // completed, pending, ongoing

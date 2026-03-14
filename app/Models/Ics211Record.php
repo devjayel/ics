@@ -13,10 +13,15 @@ class Ics211Record extends Model
         'type',
         'order_request_number',
         'checkin_location',
-        'region',
+        'start_date',
+        'start_time',
         'remarks',
         'remarks_image_attachment',
         'status',
+    ];
+
+    protected $casts = [
+        'start_date' => 'date',
     ];
 
     public function operators()

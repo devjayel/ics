@@ -103,6 +103,8 @@ class IcsController extends Controller
             'token' => Str::random(8),
             'name' => $validated['name'],
             'type' => $validated['type'],
+            'start_date' => $validated['start_date'],
+            'start_time' => $validated['start_time'],
             'order_request_number' => $validated['order_request_number'],
             'checkin_location' => $validated['checkin_location'],
             'region' => $validated['region'] ?? null,
@@ -125,56 +127,6 @@ class IcsController extends Controller
             $ics211Record->toArray(),
             $rulId
         );
-
-        // Create Check-in Details if provided
-        if (! empty($validated['check_in_details'])) {
-            foreach ($validated['check_in_details'] as $checkInDetail) {
-                CheckInDetails::create([
-                    'uuid' => Str::uuid(),
-                    'ics211_record_id' => $ics211Record->id,
-                    'personnel_id' => $checkInDetail['personnel_id'] ?? null,
-                    'order_request_number' => $checkInDetail['order_request_number'],
-                    'checkin_date' => $checkInDetail['checkin_date'],
-                    'checkin_time' => $checkInDetail['checkin_time'],
-                    'kind' => $checkInDetail['kind'],
-                    'category' => $checkInDetail['category'],
-                    'type' => $checkInDetail['type'],
-                    'resource_identifier' => $checkInDetail['resource_identifier'],
-                    'name_of_leader' => $checkInDetail['name_of_leader'],
-                    'contact_information' => $checkInDetail['contact_information'],
-                    'quantity' => $checkInDetail['quantity'],
-                    'department' => $checkInDetail['department'],
-                    'departure_point_of_origin' => $checkInDetail['departure_point_of_origin'],
-                    'departure_date' => $checkInDetail['departure_date'],
-                    'departure_time' => $checkInDetail['departure_time'],
-                    'departure_method_of_travel' => $checkInDetail['departure_method_of_travel'],
-                    'with_manifest' => $checkInDetail['with_manifest'] ?? false,
-                    'incident_assignment' => $checkInDetail['incident_assignment'] ?? null,
-                    'other_qualifications' => $checkInDetail['other_qualifications'] ?? null,
-                    'sent_resl' => $checkInDetail['sent_resl'] ?? false,
-                ]);
-
-
-                // Update personnel status to assigned if personnel_id exists
-                if (! empty($checkInDetail['personnel_id'])) {
-                    Personnel::where('id', $checkInDetail['personnel_id'])->update(['status' => 'standby']);
-
-                    // Log personnel addition
-                    $personnel = Personnel::find($checkInDetail['personnel_id']);
-                    $this->logAction(
-                        $ics211Record,
-                        'personnel_added',
-                        'Personnel '.$personnel->name.' ('.$personnel->serial_number.') added to ICS',
-                        null,
-                        ['personnel_id' => $checkInDetail['personnel_id'], 'personnel_name' => $personnel->name],
-                        $rulId
-                    );
-
-                    // Notify personnel via Pusher
-                    //$this->pusherService->push("ics-{$personnel->uuid}", 'ics_task_updated', []);
-                }
-            }
-        }
 
         // Load relationships
         $ics211Record->load(['operators.certificates', 'checkInDetails.personnel']);
@@ -238,7 +190,9 @@ class IcsController extends Controller
 
         $ics211Record->update(array_filter([
             'name' => $validated['name'] ?? $ics211Record->name,
-            'type' => $validated['type'] ?? $ics211Record->type,
+            'type' => $validated['type'] ?? $ics211Record->type,    
+            'start_date' => $validated['start_date'] ?? $ics211Record->start_date,
+            'start_time' => $validated['start_time'] ?? $ics211Record->start_time,
             'order_request_number' => $validated['order_request_number'] ?? $ics211Record->order_request_number,
             'checkin_location' => $validated['checkin_location'] ?? $ics211Record->checkin_location,
             'region' => $validated['region'] ?? $ics211Record->region,

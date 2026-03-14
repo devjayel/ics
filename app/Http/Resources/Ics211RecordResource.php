@@ -32,7 +32,9 @@ class Ics211RecordResource extends JsonResource
             'type' => $this->type,
             'order_request_number' => $this->order_request_number,
             'checkin_location' => $this->checkin_location,
-            'region' => $this->region,
+            'start_date' => $this->start_date ? $this->start_date->format('Y-m-d') : null,
+            'start_time' => $this->start_time ? \Carbon\Carbon::parse($this->start_time)->format('H:i') : null,
+            'start_timestamp' => $this->start_date && $this->start_time ? $this->start_date->format('F d, Y') . ' at ' . \Carbon\Carbon::parse($this->start_time)->format('g:i A') : null,
             'remarks' => $this->remarks,
             'remarks_image_attachment' => $this->remarks_image_attachment ? asset('storage/' . $this->remarks_image_attachment) : null, // Convert to full URL if exists
             'status' => $this->status,
