@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\PersonnelController;
 use App\Http\Controllers\Api\CheckInDetailHistoriesController;
 use App\Http\Controllers\Api\IcsLogController;
 use App\Http\Controllers\IcsCheckInDetailController;
+use App\Http\Controllers\Api\IcsExportController;
 
 
 Route::get('/status', function () {
@@ -29,6 +30,10 @@ Route::middleware("throttle:60,1")->prefix("auth")->group(function () {
 Route::middleware(["auth:sanctum", "throttle:60,1"])->group(function () {
     Route::post('auth/logout', [LoginController::class, 'logout']);
 });
+
+
+//export ICS 211 record with check-in details as PDF
+Route::get('/ics/{uuid}/export', [IcsExportController::class, 'export']);
 
 //rul
 Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function () {
@@ -53,14 +58,15 @@ Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function 
     Route::post('/ics/{id}/status/{status}', [IcsController::class, 'updateStatus']);
     Route::post('/ics/checkin/{uuid}/status', [IcsController::class, 'updateCheckinDetailStatus']);
     Route::get('/ics/{icsUuid}/logs', [IcsLogController::class, 'icsRecordLogs']);
-    
+
+
     //management of check-in details
     Route::get('/ics/{icsUuid}/checkin', [IcsCheckInDetailController::class, 'index']);
     Route::get('/ics/checkin/{uuid}', [IcsCheckInDetailController::class, 'show']);
     Route::post('/ics/{icsUuid}/checkin', [IcsCheckInDetailController::class, 'store']);
     Route::post('/ics/checkin/{uuid}/edit', [IcsCheckInDetailController::class, 'update']);
     Route::post('/ics/checkin/{uuid}/delete', [IcsCheckInDetailController::class, 'destroy']);
-    
+
     //management of CheckInDetailHistories
     Route::get('/ics/checkin/{id}/history', [CheckInDetailHistoriesController::class, 'show']);
     Route::post('/ics/checkin/history/{id}/status/{status}', [CheckInDetailHistoriesController::class, 'updateStatus']);

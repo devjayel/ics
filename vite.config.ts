@@ -28,7 +28,7 @@ export default defineConfig({
         host: '0.0.0.0',       // allow external devices
         port: 5173,            // or any available port
         hmr: {
-            host: '192.168.1.18',   // your local machine IP
+            host: '192.168.1.7',   // your local machine IP
         },
     },
 });
