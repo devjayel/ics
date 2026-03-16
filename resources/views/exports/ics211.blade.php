@@ -332,7 +332,7 @@
     </div>
 
     {{-- Check-in Details Table --}}
-    <table style="border-collapse: collapse; width: 100%;">
+    <table style="border-collapse: collapse; width: 100%; height: 520px;">
         <thead>
             {{-- Top header row --}}
             <tr>
@@ -401,7 +401,7 @@
 
             {{-- Fill empty rows to maintain form appearance (minimum 8 rows) --}}
             @for($i = count($checkInDetails); $i < 8; $i++)
-            <tr style="height: 16px;">
+            <tr>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
                 <td></td><td></td><td></td><td></td><td></td>
