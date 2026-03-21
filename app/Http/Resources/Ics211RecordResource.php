@@ -57,6 +57,7 @@ class Ics211RecordResource extends JsonResource
                 $this->relationLoaded('checkInDetails'),
                 fn() => $this->checkInDetails->where('status', 'ongoing')->count()
             ),
+            'exported_pdf_url' => route('ics.export.pdf', ['uuid' => $this->uuid]),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

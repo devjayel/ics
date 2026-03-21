@@ -33,7 +33,7 @@ Route::middleware(["auth:sanctum", "throttle:60,1"])->group(function () {
 
 
 //export ICS 211 record with check-in details as PDF
-Route::get('/ics/{uuid}/export', [IcsExportController::class, 'export']);
+Route::get('/ics/{uuid}/export/pdf', [IcsExportController::class, 'export'])->name('ics.export.pdf');
 
 //rul
 Route::prefix('rul')->middleware(['rul.auth', 'throttle:60,1'])->group(function () {
